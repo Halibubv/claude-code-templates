@@ -85,8 +85,8 @@ function showInAppDialog(info: InAppBrowser) {
   // Close a previous dialog through its own close() so its keydown listener goes too.
   closeActiveDialog?.(false);
 
-  const appName = info.app === 'this app' ? "this app's browser" : `${info.app}'s browser`;
-  const browserName = info.platform === 'ios' ? 'Safari' : info.platform === 'android' ? 'Chrome' : 'your browser';
+  const appName = info.app === 'this app' ? 'встроенном браузере этого приложения' : `встроенном браузере ${info.app}`;
+  const browserName = info.platform === 'ios' ? 'Safari' : info.platform === 'android' ? 'Chrome' : 'обычном браузере';
   const openUrl = externalBrowserUrl(window.location.href, info.platform);
 
   const overlay = document.createElement('div');
@@ -107,14 +107,14 @@ function showInAppDialog(info: InAppBrowser) {
 
   const title = document.createElement('h2');
   title.id = `${DIALOG_ID}-title`;
-  title.textContent = `Open aitmpl.com in ${browserName} to sign in`;
+  title.textContent = `Чтобы войти, откройте aitmpl.com в ${browserName}`;
   title.style.cssText = 'margin:0 0 8px;font-size:16px;font-weight:600;line-height:1.3;';
 
   const body = document.createElement('p');
   body.textContent =
-    `GitHub and Google sign-in don't work inside ${appName}. ` +
-    `Open this page in ${browserName} and sign in there.` +
-    (info.app === 'X' ? ' In X, tap the compass icon at the bottom right.' : '');
+    `Вход через GitHub и Google не работает во ${appName}. ` +
+    `Откройте эту страницу в ${browserName} и войдите там.` +
+    (info.app === 'X' ? ' В X нажмите на значок компаса внизу справа.' : '');
   body.style.cssText = 'margin:0 0 16px;font-size:14px;line-height:1.5;color:var(--color-text-secondary,#c3c1b7);';
 
   const btnBase =
@@ -130,14 +130,14 @@ function showInAppDialog(info: InAppBrowser) {
   if (openUrl) {
     const open = document.createElement('a');
     open.href = openUrl;
-    open.textContent = `Open in ${browserName}`;
+    open.textContent = `Открыть в ${browserName}`;
     open.style.cssText = primary;
     actions.append(open);
   }
 
   const copy = document.createElement('button');
   copy.type = 'button';
-  copy.textContent = 'Copy link';
+  copy.textContent = 'Скопировать ссылку';
   copy.style.cssText = openUrl ? secondary : primary;
   copy.addEventListener('click', async () => {
     const href = window.location.href;
@@ -153,13 +153,13 @@ function showInAppDialog(info: InAppBrowser) {
       try { ok = document.execCommand('copy'); } catch { ok = false; }
       ta.remove();
     }
-    copy.textContent = ok ? `Copied. Paste it in ${browserName}` : href;
+    copy.textContent = ok ? `Скопировано. Вставьте ссылку в адресную строку ${info.platform === 'ios' ? 'Safari' : info.platform === 'android' ? 'Chrome' : 'браузера'}` : href;
   });
   actions.append(copy);
 
   const email = document.createElement('button');
   email.type = 'button';
-  email.textContent = 'Use email and password here';
+  email.textContent = 'Войти здесь по почте и паролю';
   email.style.cssText =
     btnBase + 'background:transparent;border:0;color:var(--color-text-secondary,#c3c1b7);margin:0;';
   email.addEventListener('click', () => { close(false); clerkOpenSignIn(true); });

@@ -7,6 +7,8 @@
  * /skills/ changed on 2026-11-08.
  */
 
+import { formatNumber, plural } from './ru.ts';
+
 export interface ListPageMeta {
   title: string;
   description: string;
@@ -14,23 +16,23 @@ export interface ListPageMeta {
 }
 
 function formatCount(n: number): string {
-  return n.toLocaleString('en-US');
+  return formatNumber(n);
 }
 
 export function skillsPageMeta(count: number | undefined): ListPageMeta {
   if (!count || !Number.isFinite(count) || count <= 0) {
     return {
-      title: 'Claude Skills: Open-Source Skills for Claude Code',
+      title: 'Скиллы Claude: открытые скиллы для Claude Code',
       description:
-        'Browse open-source Claude skills (SKILL.md folders) for Claude Code: development, document processing, security, marketing and more. See every file of a skill and install it with one npx command.',
-      h1: 'Claude Skills',
+        'Каталог открытых скиллов Claude (папки SKILL.md) для Claude Code: разработка, работа с документами, безопасность, маркетинг и другое. Все файлы скилла на виду, установка одной командой npx.',
+      h1: 'Скиллы Claude',
     };
   }
   const n = formatCount(count);
   return {
-    title: `Claude Skills: ${n} Open-Source Skills for Claude Code`,
-    description: `Browse ${n} open-source Claude skills (SKILL.md folders) for Claude Code: development, document processing, security, marketing and more. See every file of a skill and install it with one npx command.`,
-    h1: `${n} Claude Skills`,
+    title: `Скиллы Claude: ${n} ${plural(count, ['открытый скилл', 'открытых скилла', 'открытых скиллов'])} для Claude Code`,
+    description: `${n} ${plural(count, ['открытый скилл', 'открытых скилла', 'открытых скиллов'])} Claude (папки SKILL.md) для Claude Code: разработка, работа с документами, безопасность, маркетинг и другое. Все файлы скилла на виду, установка одной командой npx.`,
+    h1: `${n} ${plural(count, ['скилл', 'скилла', 'скиллов'])} Claude`,
   };
 }
 
@@ -49,17 +51,18 @@ export interface HomePageMeta {
 export function homePageMeta(total: number | undefined): HomePageMeta {
   if (!total || !Number.isFinite(total) || total < 10) {
     return {
-      title: 'Claude Code Templates: Agents, Commands, Skills & MCP Integrations',
+      title: 'Claude Code Templates: агенты, команды, скиллы и MCP-интеграции',
       description:
-        'Browse and install pre-built components for Claude Code: AI agents, slash commands, skills, MCP integrations, hooks, and settings. Free, open-source CLI tool.',
+        'Каталог готовых компонентов для Claude Code: ИИ-агенты, слэш-команды, скиллы, MCP-интеграции, хуки и настройки. Бесплатный CLI-инструмент с открытым исходным кодом.',
       schemaDescription:
-        'CLI tool and catalog of Claude Code components: agents, commands, skills, settings, hooks, and MCP integrations.',
+        'CLI-инструмент и каталог компонентов Claude Code: агенты, команды, скиллы, настройки, хуки и MCP-интеграции.',
     };
   }
+  // Rounded to the ten, so the number always ends in 0 and takes the genitive plural.
   const n = `${formatCount(Math.floor(total / 10) * 10)}+`;
   return {
-    title: `Claude Code Templates: ${n} Agents, Commands, Skills & MCP Integrations`,
-    description: `Browse and install ${n} pre-built components for Claude Code: AI agents, slash commands, skills, MCP integrations, hooks, and settings. Free, open-source CLI tool.`,
-    schemaDescription: `CLI tool and catalog of Claude Code components. Over ${n.slice(0, -1)} agents, commands, skills, settings, hooks, and MCP integrations.`,
+    title: `Claude Code Templates: ${n} агентов, команд, скиллов и MCP-интеграций`,
+    description: `Каталог из ${n} готовых компонентов для Claude Code: ИИ-агенты, слэш-команды, скиллы, MCP-интеграции, хуки и настройки. Бесплатный CLI-инструмент с открытым исходным кодом.`,
+    schemaDescription: `CLI-инструмент и каталог компонентов Claude Code. Более ${n.slice(0, -1)} агентов, команд, скиллов, настроек, хуков и MCP-интеграций.`,
   };
 }

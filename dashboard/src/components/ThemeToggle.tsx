@@ -21,8 +21,8 @@ export default function ThemeToggle() {
     <button
       onClick={handleToggle}
       className="relative group p-2 rounded-lg transition-all duration-200 hover:bg-[var(--color-surface-2)] active:scale-95 flex items-center justify-center"
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+      title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
     >
       <div className="relative w-5 h-5">
         {/* Sun icon for light mode */}

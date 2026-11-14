@@ -9,6 +9,7 @@ import { fetchComponentsByType } from '../lib/data';
 import { openSignIn } from '../lib/sign-in';
 import { myComponentsUrl } from '../lib/save-component';
 import { showToast } from '../lib/toast';
+import { plural, TYPE_LABELS_RU } from '../lib/ru';
 
 const EMPTY_CART: Cart = {
   agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], loops: [], mods: [], templates: [],
@@ -101,7 +102,7 @@ export default function CartSidebar() {
   }
 
   function clearAll() {
-    if (!confirm('Clear your entire stack?')) return;
+    if (!confirm('Очистить весь стек?')) return;
     const empty = { ...EMPTY_CART };
     setCart(empty);
     localStorage.setItem('claudeCodeCart', JSON.stringify(empty));
@@ -138,7 +139,7 @@ export default function CartSidebar() {
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     } else {
-      window.prompt('Copy your stack link:', url);
+      window.prompt('Скопируйте ссылку на стек:', url);
     }
   }
 
@@ -149,7 +150,7 @@ export default function CartSidebar() {
     const item_count = totalItems;
     if (typeof navigator.share === 'function') {
       try {
-        await navigator.share({ title: 'My Claude Code stack', text: 'Install it from your computer:', url });
+        await navigator.share({ title: 'Мой стек для Claude Code', text: 'Установите его с компьютера:', url });
         track('share_component', { kind: 'stack', method: 'share', item_count, source: 'stack' });
         return;
       } catch (err) {
@@ -157,8 +158,8 @@ export default function CartSidebar() {
       }
     }
     track('share_component', { kind: 'stack', method: 'copy', item_count, source: 'stack' });
-    if (await copyText(url)) showToast({ message: 'Link copied. Open it on your computer to install the stack.' });
-    else window.prompt('Copy your stack link:', url);
+    if (await copyText(url)) showToast({ message: 'Ссылка скопирована. Откройте её на компьютере, чтобы установить стек.' });
+    else window.prompt('Скопируйте ссылку на стек:', url);
   }
 
   async function saveAsCollection() {
@@ -179,14 +180,14 @@ export default function CartSidebar() {
       window.location.assign(myComponentsUrl(collection.id));
     } catch (err) {
       console.error('Failed to save the stack as a collection:', err);
-      showToast({ message: "Couldn't save your stack. Try again in a moment." });
+      showToast({ message: 'Не удалось сохранить стек. Попробуйте чуть позже.' });
       setSaving(false);
     }
   }
 
   function shareTwitter() {
     const cmd = generateCommand();
-    const text = `Check out my Claude Code stack!\n\n${cmd}\n\nBuild yours at https://aitmpl.com`;
+    const text = `Мой стек для Claude Code:\n\n${cmd}\n\nСоберите свой на https://aitmpl.com`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   }
 
@@ -201,7 +202,7 @@ export default function CartSidebar() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
-          <span className="text-[13px] font-semibold">Stack</span>
+          <span className="text-[13px] font-semibold">Стек</span>
           <span className="min-w-5 h-5 px-1.5 rounded-full bg-white/25 backdrop-blur-sm text-white text-[11px] font-bold flex items-center justify-center border border-white/20">
             {totalItems}
           </span>
@@ -234,9 +235,9 @@ export default function CartSidebar() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)] leading-none">Stack Builder</h2>
+              <h2 className="text-[15px] font-semibold text-[var(--color-text-primary)] leading-none">Сборка стека</h2>
               <span className="text-[11px] text-[var(--color-text-tertiary)] mt-1">
-                {totalItems} {totalItems === 1 ? 'component' : 'components'}
+                {totalItems} {plural(totalItems, ['компонент', 'компонента', 'компонентов'])}
               </span>
             </div>
           </div>
@@ -246,13 +247,13 @@ export default function CartSidebar() {
                 onClick={clearAll}
                 className="text-xs text-[var(--color-text-tertiary)] hover:text-red-400 hover:bg-red-400/10 px-3 py-1.5 rounded-lg transition-all font-medium"
               >
-                Clear All
+                Очистить
               </button>
             )}
             <button
               onClick={() => setOpen(false)}
               className="p-2 rounded-lg hover:bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-              aria-label="Close sidebar"
+              aria-label="Закрыть панель"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -275,9 +276,9 @@ export default function CartSidebar() {
                   </svg>
                 </div>
               </div>
-              <p className="text-base font-semibold text-[var(--color-text-primary)] mb-2">Your stack is empty</p>
+              <p className="text-base font-semibold text-[var(--color-text-primary)] mb-2">Стек пока пуст</p>
               <p className="text-[13px] text-[var(--color-text-secondary)] max-w-xs leading-relaxed">
-                Browse components and click the <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--color-accent)]/10 text-[var(--color-accent)] text-[10px] font-bold mx-0.5">+</span> button to add them to your stack for easy installation.
+                Нажмите <span className="inline-flex items-center justify-center w-4 h-4 rounded bg-[var(--color-accent)]/10 text-[var(--color-accent)] text-[10px] font-bold mx-0.5">+</span> на карточке компонента, чтобы добавить его в стек и установить всё одной командой.
               </p>
             </div>
           ) : (
@@ -293,7 +294,7 @@ export default function CartSidebar() {
                         <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
                       </svg>
                       <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
-                        {config?.label ?? type}
+                        {TYPE_LABELS_RU[type] ?? (type === 'loops' ? 'Циклы' : config?.label ?? type)}
                       </span>
                       <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] font-semibold tabular-nums border border-[var(--color-border)]">
                         {items.length}
@@ -324,8 +325,8 @@ export default function CartSidebar() {
                           <button
                             onClick={() => removeItem(item.path, type)}
                             className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-red-400/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-all shrink-0"
-                            title="Remove from stack"
-                            aria-label={`Remove ${formatName(item.name)}`}
+                            title="Убрать из стека"
+                            aria-label={`Убрать ${formatName(item.name)}`}
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -350,7 +351,7 @@ export default function CartSidebar() {
                 <svg className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wide">Installation Command</span>
+                <span className="text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wide">Команда установки</span>
               </div>
               <div className="bg-[var(--color-surface-2)] rounded-lg p-3 text-[11px] font-mono text-[var(--color-text-secondary)] break-all max-h-20 overflow-y-auto border border-[var(--color-border)] shadow-inner hover:border-[var(--color-accent)]/30 transition-colors">
                 {generateCommand()}
@@ -368,22 +369,22 @@ export default function CartSidebar() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    Copied!
+                    Скопировано!
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                     </svg>
-                    Copy Command
+                    Копировать команду
                   </>
                 )}
               </button>
               <button
                 onClick={shareTwitter}
                 className="px-3.5 py-2.5 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-lg transition-all duration-200 border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-sm active:scale-95"
-                title="Share on Twitter"
-                aria-label="Share on Twitter"
+                title="Поделиться в X (Twitter)"
+                aria-label="Поделиться в X (Twitter)"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -398,26 +399,26 @@ export default function CartSidebar() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" />
                   </svg>
-                  Send to your computer
+                  Отправить на компьютер
                 </button>
               ) : (
                 <button onClick={copyStackLink} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] rounded-lg text-[13px] font-medium transition-colors border border-[var(--color-border)] disabled:opacity-60">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 13a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1 1M14 11a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1-1" />
                   </svg>
-                  {linkCopied ? 'Link copied' : 'Copy stack link'}
+                  {linkCopied ? 'Ссылка скопирована' : 'Ссылка на стек'}
                 </button>
               )}
               <button onClick={saveAsCollection} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] rounded-lg text-[13px] font-medium transition-colors border border-[var(--color-border)] disabled:opacity-60">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                 </svg>
-                {saving ? 'Saving…' : 'Save as collection'}
+                {saving ? 'Сохраняем…' : 'Сохранить как коллекцию'}
               </button>
             </div>
             {isPhone && (
               <button onClick={copyStackLink} className="w-full text-center text-[12px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
-                {linkCopied ? 'Link copied' : 'Or copy the stack link'}
+                {linkCopied ? 'Ссылка скопирована' : 'Или скопируйте ссылку на стек'}
               </button>
             )}
           </div>

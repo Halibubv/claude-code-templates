@@ -8,6 +8,7 @@ import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
 import { componentRef, track } from '../lib/analytics';
 import { componentPath, pluralType } from '../lib/component-url';
+import { plural, formatNumber, TYPE_LABELS_RU } from '../lib/ru';
 
 type GridComponent = Component & { sponsored?: boolean };
 
@@ -93,7 +94,7 @@ export default function ComponentGrid({ initialType }: Props) {
           adsPromise.then((lateAds) => { if (!cancelled) setAds(lateAds); });
         }
       } catch {
-        if (!cancelled) { setError('Failed to load components'); setLoading(false); }
+        if (!cancelled) { setError('Не удалось загрузить компоненты'); setLoading(false); }
       }
     }
 
@@ -289,8 +290,8 @@ export default function ComponentGrid({ initialType }: Props) {
             <div className="absolute inset-[6px] bg-gradient-to-br from-[var(--color-primary-500)]/20 to-[var(--color-accent-400)]/20 rounded-full animate-pulse" />
           </div>
           <div className="flex flex-col items-center gap-2">
-            <span className="text-[14px] font-semibold text-[var(--color-text-primary)] animate-pulse">Loading components</span>
-            <span className="text-[12px] text-[var(--color-text-tertiary)]">Preparing your experience...</span>
+            <span className="text-[14px] font-semibold text-[var(--color-text-primary)] animate-pulse">Загружаем компоненты</span>
+            <span className="text-[12px] text-[var(--color-text-tertiary)]">Ещё секунду...</span>
           </div>
           {/* Skeleton cards preview */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full max-w-6xl mt-8">
@@ -328,14 +329,14 @@ export default function ComponentGrid({ initialType }: Props) {
             </svg>
           </div>
           <div>
-            <h3 className="text-[14px] font-semibold text-[var(--color-text-primary)] mb-1">Failed to load components</h3>
+            <h3 className="text-[14px] font-semibold text-[var(--color-text-primary)] mb-1">Не удалось загрузить компоненты</h3>
             <p className="text-[13px] text-[var(--color-text-secondary)]">{error}</p>
           </div>
           <button 
             onClick={() => window.location.reload()} 
             className="px-4 py-2 text-[13px] font-medium rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] transition-all active:scale-95"
           >
-            Try again
+            Повторить
           </button>
         </div>
       </div>
@@ -347,7 +348,7 @@ export default function ComponentGrid({ initialType }: Props) {
       {/* Enhanced Filter bar with view modes */}
       <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-0)] backdrop-blur-sm sm:sticky sm:top-14 z-10">
         {/* Type switcher for phones: the sidebar that lists the types is hidden below md */}
-        <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 pt-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Component types">
+        <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 pt-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Типы компонентов">
           {Object.entries(TYPE_CONFIG).filter(([, cfg]) => !cfg.hidden).map(([type, cfg]) => (
             <a
               key={type}
@@ -361,7 +362,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:text-[var(--color-text-primary)]'
               }`}
             >
-              {cfg.label}
+              {TYPE_LABELS_RU[type] ?? cfg.label}
             </a>
           ))}
         </nav>
@@ -373,7 +374,7 @@ export default function ComponentGrid({ initialType }: Props) {
             </svg>
             <input
               type="text"
-              placeholder="Search components..."
+              placeholder="Поиск компонентов..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] pl-10 pr-9 py-2.5 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 transition-all hover:border-[var(--color-border-hover)]"
@@ -382,7 +383,7 @@ export default function ComponentGrid({ initialType }: Props) {
               <button
                 onClick={() => setSearch('')}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-md flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-all active:scale-95"
-                aria-label="Clear search"
+                aria-label="Очистить поиск"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -400,7 +401,7 @@ export default function ComponentGrid({ initialType }: Props) {
               onChange={(e) => setCategory(e.target.value)}
               className="flex-1 sm:flex-none min-w-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[16px] sm:text-[13px] text-[var(--color-text-secondary)] font-medium px-3.5 py-2 sm:py-2.5 pr-9 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 cursor-pointer transition-all appearance-none hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23737373%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
-              <option value="all">All categories</option>
+              <option value="all">Все категории</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
@@ -418,8 +419,8 @@ export default function ComponentGrid({ initialType }: Props) {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
               </svg>
-              <span className="hidden sm:inline">Filters</span>
-              <span className="sr-only sm:hidden">Filters and sort</span>
+              <span className="hidden sm:inline">Фильтры</span>
+              <span className="sr-only sm:hidden">Фильтры и сортировка</span>
               {(hasActiveFilters || sortBy !== 'downloads') && (
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
               )}
@@ -435,7 +436,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   ? 'bg-[var(--color-surface-4)] text-[var(--color-text-primary)] shadow-sm'
                   : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Grid view"
+              title="Плиткой"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -448,7 +449,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   ? 'bg-[var(--color-surface-4)] text-[var(--color-text-primary)] shadow-sm'
                   : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="List view"
+              title="Списком"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -458,14 +459,14 @@ export default function ComponentGrid({ initialType }: Props) {
 
           {/* Sort */}
           <div className="hidden sm:flex items-center gap-2 sm:ml-auto">
-            <span className="text-[11px] text-[var(--color-text-tertiary)] font-medium hidden sm:inline">Sort by</span>
+            <span className="text-[11px] text-[var(--color-text-tertiary)] font-medium hidden sm:inline">Сортировка</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name')}
               className="font-mono bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] font-medium px-3 py-2 pr-9 outline-none focus:border-[var(--color-accent)] cursor-pointer transition-all appearance-none hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%237d8590%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
-              <option value="downloads">Most Popular</option>
-              <option value="name">Alphabetical</option>
+              <option value="downloads">Популярные</option>
+              <option value="name">По названию</option>
             </select>
           </div>
         </div>
@@ -477,10 +478,10 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Sort: on phones it lives here instead of in the bar */}
               <div className="sm:hidden">
                 <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
-                  Sort by
+                  Сортировка
                 </label>
                 <div className="flex gap-2">
-                  {([['downloads', 'Most Popular'], ['name', 'Alphabetical']] as const).map(([value, label]) => (
+                  {([['downloads', 'Популярные'], ['name', 'По названию']] as const).map(([value, label]) => (
                     <button
                       key={value}
                       onClick={() => setSortBy(value)}
@@ -499,7 +500,7 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Multi-category filter */}
               <div className="flex-1">
                 <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
-                  Categories
+                  Категории
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {categories.slice(0, 8).map((cat) => (
@@ -521,7 +522,7 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Downloads filter */}
               <div className="w-full sm:w-64">
                 <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
-                  Min Downloads: {minDownloads}+
+                  Мин. загрузок: {formatNumber(minDownloads)}+
                 </label>
                 <input
                   type="range"
@@ -535,7 +536,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 <div className="flex justify-between text-[10px] text-[var(--color-text-tertiary)] mt-1">
                   <span>0</span>
                   <span>500</span>
-                  <span>1000+</span>
+                  <span>1 000+</span>
                 </div>
               </div>
 
@@ -545,7 +546,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   onClick={clearAllFilters}
                   className="self-start px-4 py-2 text-[12px] font-semibold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all active:scale-95"
                 >
-                  Clear All
+                  Сбросить всё
                 </button>
               )}
             </div>
@@ -558,11 +559,11 @@ export default function ComponentGrid({ initialType }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[13px] text-[var(--color-text-secondary)] font-medium">
-              {filtered.length} {filtered.length !== 1 ? 'components' : 'component'}
+              {formatNumber(filtered.length)} {plural(filtered.length, ['компонент', 'компонента', 'компонентов'])}
             </span>
             {search && (
               <span className="text-[12px] text-[var(--color-text-tertiary)]">
-                matching <span className="font-medium text-[var(--color-text-secondary)]">"{search}"</span>
+                по запросу <span className="font-medium text-[var(--color-text-secondary)]">«{search}»</span>
               </span>
             )}
             {category !== 'all' && (
@@ -578,10 +579,10 @@ export default function ComponentGrid({ initialType }: Props) {
               <button
                 onClick={() => setManyInCart(paged, !pageInStack)}
                 className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all active:scale-95"
-                title={pageInStack ? 'Remove the components on this page from your stack' : 'Add all visible components to stack'}
+                title={pageInStack ? 'Убрать компоненты этой страницы из стека' : 'Добавить все компоненты на странице в стек'}
                 aria-pressed={pageInStack}
               >
-                {pageInStack ? '− Remove Page from Stack' : '+ Add Page to Stack'}
+                {pageInStack ? '− Убрать страницу из стека' : '+ Добавить страницу в стек'}
               </button>
             </div>
           )}
@@ -590,7 +591,7 @@ export default function ComponentGrid({ initialType }: Props) {
         {/* Keyboard shortcuts hint */}
         <div className="hidden lg:flex items-center gap-2 text-[11px] text-[var(--color-text-tertiary)]">
           <kbd className="px-2 py-1 rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] font-mono">⌘K</kbd>
-          <span>to search</span>
+          <span>для поиска</span>
         </div>
       </div>
 
@@ -641,7 +642,7 @@ export default function ComponentGrid({ initialType }: Props) {
                     </a>
                   </h3>
                   <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
-                    {component.description || component.content?.slice(0, 150) || 'No description'}
+                    {component.description || component.content?.slice(0, 150) || 'Без описания'}
                   </p>
                 </div>
 
@@ -649,7 +650,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 <div className="flex items-center gap-2 shrink-0">
                   {component.sponsored && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
-                      Sponsored
+                      Реклама
                     </span>
                   )}
                   {component.category && (
@@ -662,7 +663,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
-                      {component.downloads?.toLocaleString()}
+                      {formatNumber(component.downloads ?? 0)}
                     </span>
                   )}
                   <SkillSpectorBadge result={component.skillspector} />
@@ -683,7 +684,7 @@ export default function ComponentGrid({ initialType }: Props) {
                         ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
                         : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]'
                     }`}
-                    title={inCart ? 'Remove from stack' : 'Add to stack'}
+                    title={inCart ? 'Убрать из стека' : 'Добавить в стек'}
                   >
                     {inCart ? (
                       <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
@@ -737,12 +738,12 @@ export default function ComponentGrid({ initialType }: Props) {
                   </a>
                 </h3>
                 <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
-                  {component.description || component.content?.slice(0, 120) || 'No description'}
+                  {component.description || component.content?.slice(0, 120) || 'Без описания'}
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-3">
                   {component.sponsored && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
-                      Sponsored
+                      Реклама
                     </span>
                   )}
                   {component.category && (
@@ -755,7 +756,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
-                      {component.downloads?.toLocaleString()}
+                      {formatNumber(component.downloads ?? 0)}
                     </span>
                   )}
                   <SkillSpectorBadge result={component.skillspector} />
@@ -777,8 +778,8 @@ export default function ComponentGrid({ initialType }: Props) {
                       ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
                       : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-[var(--color-accent)] hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]'
                   }`}
-                  title={inCart ? 'Remove from stack' : 'Add to stack'}
-                  aria-label={inCart ? 'Remove from stack' : 'Add to stack'}
+                  title={inCart ? 'Убрать из стека' : 'Добавить в стек'}
+                  aria-label={inCart ? 'Убрать из стека' : 'Добавить в стек'}
                 >
                   {inCart ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
@@ -817,14 +818,14 @@ export default function ComponentGrid({ initialType }: Props) {
 
           {/* Message */}
           <h3 className="text-[17px] font-bold text-[var(--color-text-primary)] mb-3">
-            {search ? `No results for "${search}"` : 'No components found'}
+            {search ? `Ничего не найдено по запросу «${search}»` : 'Компонентов не найдено'}
           </h3>
           <p className="text-[14px] text-[var(--color-text-secondary)] max-w-md text-center mb-8 leading-relaxed">
             {search 
-              ? "We couldn't find any components matching your search. Try different keywords or browse all categories."
+              ? "Ни один компонент не подошёл под запрос. Попробуйте другие слова или посмотрите все категории."
               : category !== 'all'
-              ? "No components in this category yet. Try selecting a different category or browse all."
-              : "No components available at the moment. Check back soon!"}
+              ? "В этой категории пока нет компонентов. Выберите другую категорию или посмотрите все."
+              : "Компонентов пока нет. Загляните позже!"}
           </p>
 
           {/* Actions */}
@@ -834,7 +835,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 onClick={() => setSearch('')} 
                 className="px-5 py-2.5 text-[13px] font-semibold rounded-xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:shadow-lg transition-all active:scale-95"
               >
-                Clear search
+                Очистить поиск
               </button>
             )}
             {category !== 'all' && (
@@ -842,7 +843,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 onClick={() => setCategory('all')} 
                 className="px-5 py-2.5 text-[13px] font-semibold rounded-xl bg-[var(--color-surface-2)] text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:shadow-lg transition-all active:scale-95"
               >
-                View all categories
+                Все категории
               </button>
             )}
             {!search && category === 'all' && (
@@ -850,7 +851,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 href="/" 
                 className="px-5 py-2.5 text-[13px] font-semibold rounded-xl bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] text-white hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] shadow-lg hover:shadow-xl transition-all active:scale-95"
               >
-                Browse all components
+                Все компоненты
               </a>
             )}
           </div>
@@ -864,12 +865,12 @@ export default function ComponentGrid({ initialType }: Props) {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
             className="group flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-md transition-all active:scale-95 disabled:active:scale-100 disabled:hover:shadow-none"
-            aria-label="Previous page"
+            aria-label="Предыдущая страница"
           >
             <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="hidden sm:inline">Previous</span>
+            <span className="hidden sm:inline">Назад</span>
           </button>
           
           <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] shadow-sm">
@@ -886,9 +887,9 @@ export default function ComponentGrid({ initialType }: Props) {
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
             className="group flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold rounded-xl text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-md transition-all active:scale-95 disabled:active:scale-100 disabled:hover:shadow-none"
-            aria-label="Next page"
+            aria-label="Следующая страница"
           >
-            <span className="hidden sm:inline">Next</span>
+            <span className="hidden sm:inline">Вперёд</span>
             <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>

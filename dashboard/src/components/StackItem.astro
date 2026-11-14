@@ -3,17 +3,22 @@
 // opens a card with its details and an "Open component" link (StackHarness
 // owns the card). Removed components stay listed, struck through.
 import type { HarnessEntry, StackType } from '../lib/stack-link';
-import { TYPE_CONFIG } from '../lib/icons';
 
 interface Props { entry: HarnessEntry; type: StackType; label?: string; inline?: boolean }
 const { entry, type, label, inline = false } = Astro.props;
 const gone = entry.href === null;
+
+// Shown in the hover card (data-type is read only for display).
+const TYPE_SINGULAR_RU: Record<string, string> = {
+  skills: 'скилл', agents: 'агент', commands: 'команда', settings: 'настройка', hooks: 'хук', mcps: 'MCP',
+  mods: 'мод', plugins: 'плагин', loops: 'цикл', templates: 'шаблон', sandbox: 'песочница',
+};
 ---
 <button
   type="button"
   data-harness-item
   data-name={entry.name}
-  data-type={TYPE_CONFIG[type]?.singular ?? type}
+  data-type={TYPE_SINGULAR_RU[type] ?? type}
   data-category={entry.category}
   data-description={entry.description}
   data-command={entry.command}
@@ -29,6 +34,6 @@ const gone = entry.href === null;
 >
   <span class:list={['block max-w-full truncate', gone && 'line-through', inline && label && 'font-mono text-[12px]', !inline && 'font-medium']}>{label ?? entry.name}</span>
   {!inline && (entry.category || gone) && (
-    <span class="block max-w-full truncate text-[11px] text-[var(--color-text-tertiary)]">{gone ? 'No longer in the catalog' : entry.category}</span>
+    <span class="block max-w-full truncate text-[11px] text-[var(--color-text-tertiary)]">{gone ? 'Больше нет в каталоге' : entry.category}</span>
   )}
 </button>

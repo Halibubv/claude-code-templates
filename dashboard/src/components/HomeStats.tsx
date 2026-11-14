@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HOME_STATS, statValueAt, type HomeStat } from '../lib/home-stats';
+import { formatNumber } from '../lib/ru';
 
 /**
  * Compact counter strip for the home hero.
@@ -109,7 +110,7 @@ function Digit({ digit, spins, delay }: DigitProps) {
 
 /** Renders `value` as digit columns, or as plain text before the roll starts. */
 function Odometer({ value, rolling }: { value: number; rolling: boolean }) {
-  const text = value.toLocaleString('en-US');
+  const text = formatNumber(value);
 
   if (!rolling) {
     return <span className="hs-value">{text}</span>;

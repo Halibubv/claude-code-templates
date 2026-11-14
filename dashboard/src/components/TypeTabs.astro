@@ -1,5 +1,6 @@
 ---
 import { TYPE_CONFIG } from '../lib/icons';
+import { TYPE_LABELS_RU } from '../lib/ru';
 
 interface Props {
   activeType: string;
@@ -25,7 +26,7 @@ const { activeType, counts = {} } = Astro.props;
         data-astro-prefetch
       >
         <span>{config.icon}</span>
-        <span>{config.label}</span>
+        <span>{TYPE_LABELS_RU[type] ?? config.label}</span>
         {count > 0 && (
           <span
             class:list={[

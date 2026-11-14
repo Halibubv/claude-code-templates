@@ -5,6 +5,7 @@ import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import { track } from '../lib/analytics';
 import { componentPath } from '../lib/component-url';
+import { TYPE_LABELS_RU } from '../lib/ru';
 
 type SearchResult = SearchIndexEntry & { sponsored?: boolean };
 
@@ -260,7 +261,7 @@ export default function SearchModal() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search all components..."
+            placeholder="Поиск по всем компонентам..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -284,9 +285,9 @@ export default function SearchModal() {
                 </svg>
               </div>
               {/* Message */}
-              <p className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">No results found</p>
+              <p className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">Ничего не найдено</p>
               <p className="text-[13px] text-[var(--color-text-secondary)] text-center max-w-xs">
-                We couldn't find any components for "<span className="font-medium text-[var(--color-text-primary)]">{query}</span>". Try different keywords.
+                По запросу «<span className="font-medium text-[var(--color-text-primary)]">{query}</span>» компонентов нет. Попробуйте другие слова.
               </p>
             </div>
           )}
@@ -312,11 +313,11 @@ export default function SearchModal() {
                 <TypeIcon type={typePlural} size={16} className="w-4 h-4 shrink-0 [&>svg]:w-4 [&>svg]:h-4 text-[var(--color-text-tertiary)]" />
                 <div className="min-w-0 flex-1">
                   <span className="text-sm text-[var(--color-text-primary)]">{formatName(component.name)}</span>
-                  <span className="text-xs text-[var(--color-text-tertiary)] ml-2">{config?.label ?? component.type}</span>
+                  <span className="text-xs text-[var(--color-text-tertiary)] ml-2">{TYPE_LABELS_RU[typePlural] ?? (typePlural === 'loops' ? 'Циклы' : config?.label ?? component.type)}</span>
                 </div>
                 {component.sponsored && (
                   <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] shrink-0">
-                    Sponsored
+                    Реклама
                   </span>
                 )}
                 {component.category && (
@@ -334,9 +335,9 @@ export default function SearchModal() {
           <div className={`flex items-center gap-4 px-4 py-2 border-t border-[var(--color-border)] text-[10px] text-[var(--color-text-tertiary)] transition-all duration-200 delay-[150ms] ${
             isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
           }`}>
-            <span>↑↓ navigate</span>
-            <span>↵ open</span>
-            <span>esc close</span>
+            <span>↑↓ выбрать</span>
+            <span>↵ открыть</span>
+            <span>esc закрыть</span>
           </div>
         )}
       </div>

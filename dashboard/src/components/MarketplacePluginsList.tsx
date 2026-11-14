@@ -1,4 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { plural, TYPE_LABELS_RU } from '../lib/ru';
+
+// Подпись типа для показа; ключ type остаётся как в данных.
+const EXTRA_TYPE_LABELS: Record<string, string> = { lsps: 'LSP', rules: 'Правила' };
+function typeLabel(type: string): string {
+  return TYPE_LABELS_RU[type] ?? EXTRA_TYPE_LABELS[type] ?? type;
+}
 
 interface ComponentItem {
   name: string;
@@ -78,8 +85,8 @@ export default function MarketplacePluginsList({
     <div>
       <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
         <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
-          Plugins ({filtered.length}
-          {filtered.length !== pluginsList.length ? ` of ${pluginsList.length}` : ''})
+          Плагины ({filtered.length}
+          {filtered.length !== pluginsList.length ? ` из ${pluginsList.length}` : ''})
         </h2>
 
         <div className="relative w-full sm:w-72">
@@ -96,7 +103,7 @@ export default function MarketplacePluginsList({
           </svg>
           <input
             type="text"
-            placeholder="Search plugins in this marketplace..."
+            placeholder="Поиск плагинов в этом маркетплейсе..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-8 py-2 rounded-lg text-[12.5px] outline-none transition-all duration-200"
@@ -119,7 +126,7 @@ export default function MarketplacePluginsList({
               onClick={() => setSearch('')}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full flex items-center justify-center transition-colors hover:opacity-80"
               style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-tertiary)' }}
-              aria-label="Clear search"
+              aria-label="Сбросить поиск"
             >
               <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path d="M18 6 6 18M6 6l12 12" />
@@ -135,7 +142,7 @@ export default function MarketplacePluginsList({
           style={{ background: 'var(--color-surface-1)', border: '1px dashed var(--color-border)' }}
         >
           <p className="text-[13px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-            No plugins match "{search}"
+            По запросу «{search}» плагинов нет
           </p>
         </div>
       ) : (
@@ -170,12 +177,12 @@ export default function MarketplacePluginsList({
                       </h3>
                       {sourceType === 'github' && (
                         <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]">
-                          external
+                          внешний
                         </span>
                       )}
                     </div>
                     {hasAuthor && (
-                      <p className="text-[11px] text-[var(--color-text-tertiary)]">by {p.author}</p>
+                      <p className="text-[11px] text-[var(--color-text-tertiary)]">Автор: {p.author}</p>
                     )}
                   </div>
                 </div>
@@ -198,7 +205,7 @@ export default function MarketplacePluginsList({
                           borderColor: `${tagColors[type] ?? '#666'}20`,
                         }}
                       >
-                        {count} {type}
+                        {typeLabel(type)}: {count}
                       </span>
                     ))}
                   </div>
@@ -249,7 +256,7 @@ export default function MarketplacePluginsList({
               <button
                 onClick={() => setSelected(null)}
                 className="p-1 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors shrink-0"
-                aria-label="Close"
+                aria-label="Закрыть"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -266,7 +273,7 @@ export default function MarketplacePluginsList({
               )}
 
               {selected.author && selected.author !== marketplaceAuthor && (
-                <p className="text-[12px] text-[var(--color-text-tertiary)]">by {selected.author}</p>
+                <p className="text-[12px] text-[var(--color-text-tertiary)]">Автор: {selected.author}</p>
               )}
 
               {/* Components with resolved item names */}
@@ -281,9 +288,9 @@ export default function MarketplacePluginsList({
                         borderColor: `${tagColors[type] ?? '#666'}30`,
                       }}
                     >
-                      {type}
+                      {typeLabel(type)}
                     </span>
-                    <span className="text-[11px] text-[var(--color-text-tertiary)]">{items.length} items</span>
+                    <span className="text-[11px] text-[var(--color-text-tertiary)]">{items.length} {plural(items.length, ['элемент', 'элемента', 'элементов'])}</span>
                   </div>
                   <div className="space-y-1.5">
                     {items.map((item) => (
@@ -324,7 +331,7 @@ export default function MarketplacePluginsList({
                         borderColor: `${tagColors[type] ?? '#666'}25`,
                       }}
                     >
-                      {count} {type}
+                      {typeLabel(type)}: {count}
                     </span>
                   ))}
                 </div>
@@ -332,14 +339,14 @@ export default function MarketplacePluginsList({
 
               {!selected.components || Object.keys(selected.components).length === 0 ? (
                 <p className="text-[12px] text-[var(--color-text-tertiary)] italic">
-                  No component breakdown available for this plugin yet.
+                  Состав этого плагина пока неизвестен.
                 </p>
               ) : null}
 
               {/* Install command */}
               <div>
                 <div className="text-[11px] uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1.5 font-medium">
-                  Install this plugin
+                  Установка плагина
                 </div>
                 <pre className="p-3 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[12px] text-[var(--color-text-secondary)] overflow-x-auto font-mono">
                   <code>{`/plugin install ${selected.name}@${marketplaceName}`}</code>

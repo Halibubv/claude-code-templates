@@ -14,18 +14,18 @@ const W = 1230;
 const H = 490;
 
 const NODES: Record<NodeId, FlowNode> = {
-  author:       { x: 10,   y: 206, w: 150, h: 58, title: 'Contributor', sub: 'opens a pull request' },
+  author:       { x: 10,   y: 206, w: 150, h: 58, title: 'Участник', sub: 'открывает PR' },
   pr:           { x: 200,  y: 206, w: 155, h: 58, title: 'Pull request', sub: 'cli-tool/components/…' },
-  validate:     { x: 400,  y: 26,  w: 200, h: 56, title: 'claude plugin validate', sub: 'official validator · blocks' },
-  manifest:     { x: 400,  y: 112, w: 200, h: 56, title: 'source.json check', sub: 'license + pinned commit' },
-  skillspector: { x: 400,  y: 198, w: 200, h: 56, title: 'SkillSpector', sub: '64 patterns · blocks > 50' },
-  audit:        { x: 400,  y: 284, w: 200, h: 56, title: 'Security audit', sub: '5 validators · comments' },
-  bots:         { x: 400,  y: 370, w: 200, h: 56, title: 'Review bots', sub: 'cubic + greptile' },
-  gate:         { x: 650,  y: 206, w: 160, h: 58, title: 'PR gate', sub: 'checks + threads' },
-  catalog:      { x: 855,  y: 206, w: 170, h: 58, title: 'Catalog build', sub: 'rescans every component' },
-  site:         { x: 1065, y: 112, w: 155, h: 58, title: 'aitmpl.com', sub: 'seal + scan report' },
-  install:      { x: 1065, y: 300, w: 155, h: 58, title: 'Install', sub: 'CLI or Claude Code' },
-  weekly:       { x: 855,  y: 380, w: 170, h: 58, title: 'Weekly jobs', sub: 'rescan · validate' },
+  validate:     { x: 400,  y: 26,  w: 200, h: 56, title: 'claude plugin validate', sub: 'официальный валидатор · блок' },
+  manifest:     { x: 400,  y: 112, w: 200, h: 56, title: 'Проверка source.json', sub: 'лицензия + коммит' },
+  skillspector: { x: 400,  y: 198, w: 200, h: 56, title: 'SkillSpector', sub: '64 шаблона · блок > 50' },
+  audit:        { x: 400,  y: 284, w: 200, h: 56, title: 'Аудит безопасности', sub: '5 валидаторов · комментарии' },
+  bots:         { x: 400,  y: 370, w: 200, h: 56, title: 'Боты-ревьюеры', sub: 'cubic + greptile' },
+  gate:         { x: 650,  y: 206, w: 160, h: 58, title: 'Шлюз PR', sub: 'проверки + треды' },
+  catalog:      { x: 855,  y: 206, w: 170, h: 58, title: 'Сборка каталога', sub: 'пересканирует всё' },
+  site:         { x: 1065, y: 112, w: 155, h: 58, title: 'aitmpl.com', sub: 'знак + отчёт проверки' },
+  install:      { x: 1065, y: 300, w: 155, h: 58, title: 'Установка', sub: 'CLI или Claude Code' },
+  weekly:       { x: 855,  y: 380, w: 170, h: 58, title: 'Еженедельные задачи', sub: 'рескан · валидация' },
 };
 
 type EdgeKey = `${NodeId}>${NodeId}`;
@@ -65,140 +65,140 @@ interface Scenario { id: string; label: string; author?: { title: string; sub: s
 const SCENARIOS: Scenario[] = [
   {
     id: 'skill',
-    label: 'Skill in this repo',
+    label: 'Скилл в этом репозитории',
     steps: [
       {
-        moves: [{ edge: 'author>pr', label: 'SKILL.md + files' }],
-        title: 'A pull request adds the skill',
-        body: 'The skill lives in cli-tool/components/skills/{category}/{name}/. A contributor PR carries only those files: a guard fails any fork PR that also edits the generated catalog JSON.',
+        moves: [{ edge: 'author>pr', label: 'SKILL.md + файлы' }],
+        title: 'Pull request добавляет скилл',
+        body: 'Скилл лежит в cli-tool/components/skills/{category}/{name}/. PR участника содержит только эти файлы: защитная проверка валит любой PR из форка, который заодно правит сгенерированный JSON каталога.',
         source: '.github/workflows/generated-files-guard.yml',
       },
       {
         moves: [
-          { edge: 'pr>validate', label: 'changed skill' },
-          { edge: 'pr>skillspector', label: 'changed skill' },
+          { edge: 'pr>validate', label: 'изменённый скилл' },
+          { edge: 'pr>skillspector', label: 'изменённый скилл' },
           { edge: 'pr>audit', label: 'SKILL.md' },
           { edge: 'pr>bots', label: 'diff' },
         ],
-        title: 'Checks run on the changed skill only',
-        body: "Claude Code's own validator checks the format. NVIDIA SkillSpector runs static analysis with no LLM: prompt injection, data exfiltration, supply chain, dangerous code, YARA signatures. The security audit runs five validators (structure, integrity, semantics, references, provenance). cubic and greptile review the diff.",
+        title: 'Проверки идут только по изменённому скиллу',
+        body: 'Собственный валидатор Claude Code проверяет формат. NVIDIA SkillSpector выполняет статический анализ без LLM: prompt injection, утечка данных, цепочка поставок, опасный код, сигнатуры YARA. Аудит безопасности запускает пять валидаторов (структура, целостность, семантика, ссылки, происхождение). cubic и greptile проверяют diff.',
         source: 'component-validate.yml · skill-security-scan.yml · component-security-validation.yml',
       },
       {
         moves: [
-          { edge: 'validate>gate', label: '0 errors' },
-          { edge: 'skillspector>gate', label: 'score ≤ 50' },
-          { edge: 'audit>gate', label: 'report comment' },
-          { edge: 'bots>gate', label: 'threads resolved' },
+          { edge: 'validate>gate', label: '0 ошибок' },
+          { edge: 'skillspector>gate', label: 'оценка ≤ 50' },
+          { edge: 'audit>gate', label: 'комментарий с отчётом' },
+          { edge: 'bots>gate', label: 'треды закрыты' },
         ],
-        title: 'The PR gate waits for all of them',
-        body: 'The gate fails on any red check or any unresolved review thread. A pull request from a fork never merges itself: a maintainer reads it and merges it by hand.',
+        title: 'Шлюз PR ждёт их всех',
+        body: 'Шлюз не пропускает PR, если хоть одна проверка красная или остался нерешённый тред ревью. PR из форка никогда не сливается сам: мейнтейнер читает его и сливает вручную.',
         source: '.github/workflows/pr-gate.yml · pr-automerge.yml',
       },
       {
-        moves: [{ edge: 'gate>catalog', label: 'merge to main' }],
-        title: 'The catalog is rebuilt and rescanned',
-        body: 'On main the generator rebuilds the catalog and SkillSpector scans every component again, cached by file hash and scanner version. The score and top findings are stored on the catalog entry.',
+        moves: [{ edge: 'gate>catalog', label: 'слияние в main' }],
+        title: 'Каталог пересобирается и пересканируется',
+        body: 'В main генератор пересобирает каталог, а SkillSpector заново сканирует каждый компонент (с кешем по хешу файла и версии сканера). Оценка и главные находки сохраняются в записи каталога.',
         source: 'update-component-content.yml · scripts/skillspector_catalog.py',
       },
       {
         moves: [
-          { edge: 'catalog>site', label: 'scan result' },
+          { edge: 'catalog>site', label: 'результат проверки' },
           { edge: 'catalog>install', label: 'npx … --skill' },
         ],
-        title: 'Published with its scan report',
-        body: 'The component page shows the "Scanned by NVIDIA SkillSpector" seal and every observation, so you can read them before installing. The scan is display only: it never changes ranking or search.',
+        title: 'Публикуется вместе с отчётом проверки',
+        body: 'На странице компонента видны знак «Проверено NVIDIA SkillSpector» и все замечания, их можно прочитать до установки. Проверка только информирует: она никогда не влияет на ранжирование и поиск.',
         source: 'SkillSpectorReport.tsx',
       },
     ],
   },
   {
     id: 'external',
-    label: 'External skill',
-    author: { title: 'Upstream repo', sub: "the author's GitHub" },
+    label: 'Внешний скилл',
+    author: { title: 'Репозиторий автора', sub: 'GitHub автора' },
     steps: [
       {
-        moves: [{ edge: 'author>pr', label: 'source.json @ commit' }],
-        title: 'The code stays in its author’s repo',
-        body: 'The catalog folder holds only a source.json: repo, path, license and a full 40-character commit. Branches and tags are refused, so nothing upstream can change what installs.',
+        moves: [{ edge: 'author>pr', label: 'source.json @ коммит' }],
+        title: 'Код остаётся в репозитории автора',
+        body: 'В папке каталога лежит только source.json: репозиторий, путь, лицензия и полный 40-символьный коммит. Ветки и теги не принимаются, поэтому изменения у автора не меняют то, что устанавливается.',
         source: 'cli-tool/src/external-skill.js',
       },
       {
         moves: [
-          { edge: 'pr>validate', label: 'files @ commit' },
+          { edge: 'pr>validate', label: 'файлы @ коммит' },
           { edge: 'pr>manifest', label: 'source.json' },
-          { edge: 'pr>skillspector', label: 'files @ commit' },
+          { edge: 'pr>skillspector', label: 'файлы @ коммит' },
           { edge: 'pr>bots', label: 'diff' },
         ],
-        title: 'The pinned files are what gets checked',
-        body: "The manifest check requires a license on the allowlist that matches the repo's LICENSE at that commit. The validator and SkillSpector fetch the skill at that exact commit and scan those bytes.",
+        title: 'Проверяются именно закреплённые файлы',
+        body: 'Проверка манифеста требует лицензию из разрешённого списка, совпадающую с LICENSE репозитория на этом коммите. Валидатор и SkillSpector скачивают скилл ровно на этом коммите и сканируют именно эти байты.',
         source: 'scripts/external_skills.py check · skill-security-scan.yml',
       },
       {
         moves: [
-          { edge: 'validate>gate', label: '0 errors' },
-          { edge: 'manifest>gate', label: 'license ok' },
-          { edge: 'skillspector>gate', label: 'score ≤ 50' },
-          { edge: 'bots>gate', label: 'threads resolved' },
+          { edge: 'validate>gate', label: '0 ошибок' },
+          { edge: 'manifest>gate', label: 'лицензия ок' },
+          { edge: 'skillspector>gate', label: 'оценка ≤ 50' },
+          { edge: 'bots>gate', label: 'треды закрыты' },
         ],
-        title: 'Same gate as any other skill',
-        body: 'Every check must pass and every review thread must be resolved before the PR can merge.',
+        title: 'Тот же шлюз, что и для любого скилла',
+        body: 'Прежде чем PR сольют, должны пройти все проверки и закрыться все треды ревью.',
         source: '.github/workflows/pr-gate.yml',
       },
       {
-        moves: [{ edge: 'gate>catalog', label: 'merge to main' }],
-        title: 'The site shows the pinned files',
-        body: 'The generator fetches the pinned commit and puts its files in the component page, so what you read on aitmpl.com is what the CLI installs.',
+        moves: [{ edge: 'gate>catalog', label: 'слияние в main' }],
+        title: 'Сайт показывает закреплённые файлы',
+        body: 'Генератор скачивает закреплённый коммит и кладёт его файлы на страницу компонента, так что на aitmpl.com вы читаете ровно то, что установит CLI.',
         source: 'scripts/generate_components_json.py',
       },
       {
         moves: [
-          { edge: 'catalog>site', label: 'files + scan' },
-          { edge: 'catalog>install', label: 'blob sha checked' },
+          { edge: 'catalog>site', label: 'файлы + проверка' },
+          { edge: 'catalog>install', label: 'blob sha проверен' },
         ],
-        title: 'Every file is verified on install',
-        body: 'The CLI downloads each file from that commit and checks it against its git blob sha before writing it to .claude/skills/.',
+        title: 'Каждый файл сверяется при установке',
+        body: 'CLI скачивает каждый файл из этого коммита и сверяет его с git blob sha, прежде чем записать в .claude/skills/.',
         source: 'cli-tool/src/external-skill.js',
       },
     ],
   },
   {
     id: 'plugin',
-    label: 'Plugin',
-    author: { title: 'Upstream repo', sub: "the plugin's GitHub" },
+    label: 'Плагин',
+    author: { title: 'Репозиторий автора', sub: 'GitHub плагина' },
     steps: [
       {
         moves: [{ edge: 'author>pr', label: 'plugins/…/source.json' }],
-        title: 'Whole plugins are pinned the same way',
-        body: 'A Claude Code plugin is listed by a source.json pinned to a commit. Symlinks and submodules are refused, and the plugin name must match its folder.',
+        title: 'Плагины целиком закрепляются так же',
+        body: 'Плагин Claude Code попадает в каталог через source.json, закреплённый на коммите. Символические ссылки и подмодули не принимаются, имя плагина должно совпадать с его папкой.',
         source: 'scripts/external_skills.py',
       },
       {
         moves: [
-          { edge: 'pr>validate', label: 'plugin root' },
+          { edge: 'pr>validate', label: 'корень плагина' },
           { edge: 'pr>manifest', label: 'source.json' },
-          { edge: 'pr>skillspector', label: 'plugin root' },
+          { edge: 'pr>skillspector', label: 'корень плагина' },
           { edge: 'pr>bots', label: 'diff' },
         ],
-        title: 'The plugin root is scanned',
-        body: 'claude plugin validate checks the plugin and the generated marketplace. SkillSpector scans the whole plugin root, like a skill.',
+        title: 'Сканируется корень плагина',
+        body: 'claude plugin validate проверяет плагин и сгенерированный маркетплейс. SkillSpector сканирует весь корень плагина, как скилл.',
         source: 'validate_components.py · skillspector_scan.py',
       },
       {
         moves: [
-          { edge: 'validate>gate', label: '0 errors' },
-          { edge: 'manifest>gate', label: 'license ok' },
-          { edge: 'skillspector>gate', label: 'score ≤ 50' },
-          { edge: 'bots>gate', label: 'threads resolved' },
+          { edge: 'validate>gate', label: '0 ошибок' },
+          { edge: 'manifest>gate', label: 'лицензия ок' },
+          { edge: 'skillspector>gate', label: 'оценка ≤ 50' },
+          { edge: 'bots>gate', label: 'треды закрыты' },
         ],
-        title: 'Same gate',
-        body: 'Every check must pass and every review thread must be resolved before the PR can merge.',
+        title: 'Тот же шлюз',
+        body: 'Прежде чем PR сольют, должны пройти все проверки и закрыться все треды ревью.',
         source: '.github/workflows/pr-gate.yml',
       },
       {
-        moves: [{ edge: 'gate>catalog', label: 'merge to main' }],
-        title: 'marketplace.json is written',
-        body: 'The generator writes the aitmpl marketplace: one entry per plugin, with a git source and the pinned sha.',
+        moves: [{ edge: 'gate>catalog', label: 'слияние в main' }],
+        title: 'Записывается marketplace.json',
+        body: 'Генератор записывает маркетплейс aitmpl: по одной записи на плагин, с git-источником и закреплённым sha.',
         source: 'dashboard/public/marketplace.json',
       },
       {
@@ -206,60 +206,60 @@ const SCENARIOS: Scenario[] = [
           { edge: 'catalog>site', label: 'marketplace.json' },
           { edge: 'catalog>install', label: 'name@aitmpl @ sha' },
         ],
-        title: 'Claude Code installs that exact commit',
-        body: 'claude plugin install name@aitmpl clones the plugin at the pinned sha. The CLI refuses Claude Code older than 2.1.288, which fixed incomplete installs.',
+        title: 'Claude Code ставит ровно этот коммит',
+        body: 'claude plugin install name@aitmpl клонирует плагин на закреплённом sha. CLI отказывается работать с Claude Code старше 2.1.288: в этой версии исправили неполную установку.',
         source: 'cli-tool/src/plugin-install.js',
       },
     ],
   },
   {
     id: 'blocked',
-    label: 'Blocked',
+    label: 'Заблокирован',
     steps: [
       {
-        moves: [{ edge: 'author>pr', label: 'SKILL.md + files' }],
-        title: 'A risky skill is submitted',
-        body: 'Same entry point as any other skill.',
+        moves: [{ edge: 'author>pr', label: 'SKILL.md + файлы' }],
+        title: 'Присылают рискованный скилл',
+        body: 'Вход тот же, что у любого другого скилла.',
         source: '',
       },
       {
         moves: [
-          { edge: 'pr>validate', label: 'changed skill' },
-          { edge: 'pr>skillspector', label: 'changed skill' },
+          { edge: 'pr>validate', label: 'изменённый скилл' },
+          { edge: 'pr>skillspector', label: 'изменённый скилл' },
         ],
-        title: 'SkillSpector scores it',
-        body: 'Scores go from 0 to 100: 0-20 low, 21-50 medium, 51-80 high, 81-100 critical. An edited skill is also scanned as it is on main, to compare.',
+        title: 'SkillSpector выставляет оценку',
+        body: 'Оценка от 0 до 100: 0–20 низкая, 21–50 средняя, 51–80 высокая, 81–100 критическая. Изменённый скилл для сравнения сканируется ещё и в версии из main.',
         source: 'scripts/skillspector_scan.py --compare-base',
       },
       {
-        moves: [{ edge: 'skillspector>gate', label: 'score > 50', fail: true }],
-        title: 'The check fails and the PR stops',
-        body: 'A new skill above 50, or an edit that raises a score above 50, fails the check. The PR gate stays red and nothing reaches the catalog until the findings are fixed.',
+        moves: [{ edge: 'skillspector>gate', label: 'оценка > 50', fail: true }],
+        title: 'Проверка падает, PR останавливается',
+        body: 'Новый скилл с оценкой выше 50 или правка, которая поднимает оценку выше 50, валит проверку. Шлюз PR остаётся красным, и ничего не попадает в каталог, пока находки не исправят.',
         source: '.github/workflows/skill-security-scan.yml',
       },
     ],
   },
   {
     id: 'weekly',
-    label: 'Weekly re-check',
-    author: { title: 'Upstream repo', sub: 'new commits upstream' },
+    label: 'Еженедельная перепроверка',
+    author: { title: 'Репозиторий автора', sub: 'новые коммиты' },
     steps: [
       {
-        moves: [{ edge: 'weekly>catalog', label: 'full rescan' }],
-        title: 'The whole catalog is checked every week',
-        body: 'Every Monday SkillSpector scans all skills (a report, not a block) and claude plugin validate runs on the whole catalog, failing on any error.',
+        moves: [{ edge: 'weekly>catalog', label: 'полный рескан' }],
+        title: 'Весь каталог проверяется каждую неделю',
+        body: 'Каждый понедельник SkillSpector сканирует все скиллы (это отчёт, а не блокировка), а claude plugin validate проходит по всему каталогу и падает на любой ошибке.',
         source: 'skill-security-scan-all.yml · component-validate.yml',
       },
       {
-        moves: [{ edge: 'weekly>author', label: 'newer commit found' }],
-        title: 'Upstream changes are listed, not pulled',
-        body: 'One issue lists pinned skills and plugins whose repo has newer commits. Nothing updates on its own.',
+        moves: [{ edge: 'weekly>author', label: 'есть новый коммит' }],
+        title: 'Изменения у автора отмечаются, но не подтягиваются',
+        body: 'Один issue перечисляет закреплённые скиллы и плагины, в чьих репозиториях есть новые коммиты. Само по себе ничего не обновляется.',
         source: '.github/workflows/external-skills-outdated.yml',
       },
       {
-        moves: [{ edge: 'author>pr', label: 'PR bumps commit' }],
-        title: 'An update is a new pull request',
-        body: 'Users get the new code only after a PR moves the commit and passes every check again.',
+        moves: [{ edge: 'author>pr', label: 'PR меняет коммит' }],
+        title: 'Обновление — это новый pull request',
+        body: 'Пользователи получают новый код только после того, как PR передвинет коммит и снова пройдёт все проверки.',
         source: 'scripts/external_skills.py',
       },
     ],
@@ -389,7 +389,7 @@ export default function SkillReviewFlow() {
   return (
     <div className="srf rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-1)]">
       <div className="flex flex-wrap items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-        <div role="tablist" aria-label="Scenario" className="flex flex-wrap gap-1.5">
+        <div role="tablist" aria-label="Сценарий" className="flex flex-wrap gap-1.5">
           {SCENARIOS.map((s, i) => (
             <button
               key={s.id}
@@ -410,15 +410,15 @@ export default function SkillReviewFlow() {
           <button
             onClick={togglePlay}
             className="rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[12px] text-[var(--color-text-primary)] hover:border-[var(--color-accent)]"
-            aria-label={playing ? 'Pause' : 'Play'}
+            aria-label={playing ? 'Пауза' : 'Воспроизвести'}
           >
-            {playing ? '❚❚ Pause' : '▶ Play'}
+            {playing ? '❚❚ Пауза' : '▶ Пуск'}
           </button>
           <button
             onClick={() => restart()}
             className="rounded-md border border-[var(--color-border)] px-2.5 py-1 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           >
-            ↺ Replay
+            ↺ Повторить
           </button>
         </div>
       </div>
@@ -428,7 +428,7 @@ export default function SkillReviewFlow() {
           viewBox={`0 0 ${W} ${H}`}
           className="block w-full min-w-[860px]"
           role="img"
-          aria-label={`Review flow, scenario: ${scenario.label}. Step ${stepIdx + 1}: ${step.title}`}
+          aria-label={`Схема проверки, сценарий: ${scenario.label}. Шаг ${stepIdx + 1}: ${step.title}`}
         >
           <defs>
             <marker id="srf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
@@ -508,12 +508,12 @@ export default function SkillReviewFlow() {
       </div>
 
       <div className="border-t border-[var(--color-border)] px-4 py-4 sm:px-5">
-        <div className="mb-3 flex items-center gap-1.5" aria-label="Steps">
+        <div className="mb-3 flex items-center gap-1.5" aria-label="Шаги">
           {scenario.steps.map((s, i) => (
             <button
               key={i}
               onClick={() => jumpTo(i)}
-              aria-label={`Step ${i + 1}: ${s.title}`}
+              aria-label={`Шаг ${i + 1}: ${s.title}`}
               aria-current={i === stepIdx ? 'step' : undefined}
               className={`h-1.5 rounded-full transition-all ${
                 i === stepIdx ? 'w-6 bg-[var(--color-accent)]' : i < stepIdx ? 'w-3 bg-[var(--color-accent)]/50' : 'w-3 bg-[var(--color-surface-4)]'

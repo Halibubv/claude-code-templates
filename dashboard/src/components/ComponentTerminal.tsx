@@ -115,7 +115,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
       run.push(
         { kind: 'cmd', text: 'claude' },
         ...claudeBox(),
-        { kind: 'ask', text: `Use the ${name} skill on this project` },
+        { kind: 'ask', text: `Примени скилл ${name} к этому проекту` },
         { kind: 'out', text: '' },
         { kind: 'out', text: `⏺ Skill(${name})`, tone: 'magenta' },
         { kind: 'out', text: `  ⎿  Loaded .claude/skills/${name}/SKILL.md`, tone: 'gray' },
@@ -134,7 +134,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
       run.push(
         { kind: 'cmd', text: 'claude' },
         ...claudeBox(),
-        { kind: 'ask', text: `Use the ${name} agent to review this codebase` },
+        { kind: 'ask', text: `Проверь этот код с агентом ${name}` },
         { kind: 'out', text: '' },
         { kind: 'out', text: `⏺ Task(${name})`, tone: 'magenta' },
         { kind: 'work', text: 'Agent running', done: '  ⎿  Done (14 tool uses · 32.4k tokens)', tone: 'gray', ms: 1600 },
@@ -201,7 +201,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
           { kind: 'out', text: `  ⎿  hook ran on ${event}`, tone: 'gray' },
           { kind: 'out', text: '' },
           ...claudeBox(),
-          { kind: 'ask', text: 'Continue with the task' },
+          { kind: 'ask', text: 'Продолжай задачу' },
           { kind: 'out', text: '' },
           { kind: 'out', text: `⏺ ${title} is active in this session.`, tone: 'green' },
         );
@@ -209,7 +209,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
         run.push(
           { kind: 'cmd', text: 'claude' },
           ...claudeBox(),
-          { kind: 'ask', text: 'Refactor the auth module' },
+          { kind: 'ask', text: 'Отрефактори модуль авторизации' },
           { kind: 'out', text: '' },
           { kind: 'work', text: `${event} hook`, done: `⏺ ${event}:${name}`, tone: 'magenta', ms: 1300 },
           { kind: 'out', text: '  ⎿  hook ran on the prompt', tone: 'gray' },
@@ -219,7 +219,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
         run.push(
           { kind: 'cmd', text: 'claude' },
           ...claudeBox(),
-          { kind: 'ask', text: 'Run the test suite' },
+          { kind: 'ask', text: 'Запусти тесты' },
           { kind: 'out', text: '' },
           { kind: 'out', text: '⏺ Bash(npm test)', tone: 'magenta' },
           { kind: 'out', text: '  ⎿  42 tests passed', tone: 'green' },
@@ -230,7 +230,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
         run.push(
           { kind: 'cmd', text: 'claude' },
           ...claudeBox(),
-          { kind: 'ask', text: 'Run the test suite' },
+          { kind: 'ask', text: 'Запусти тесты' },
           { kind: 'out', text: '' },
           { kind: 'out', text: '⏺ Bash(npm test)', tone: 'magenta' },
           { kind: 'work', text: `${event} hook`, done: `  ⎿  ${event}:${name} ran on the tool call`, tone: 'gray', ms: 1400 },
@@ -273,7 +273,7 @@ function buildScript(props: ComponentTerminalProps): Step[] {
         { kind: 'work', text: 'Loading plugins', done: `⏺ ${name}@skills-dir loaded`, tone: 'magenta', ms: 1400 },
         { kind: 'out', text: '  ⎿  function hooks registered', tone: 'gray' },
         { kind: 'out', text: '' },
-        { kind: 'ask', text: 'Continue with the task' },
+        { kind: 'ask', text: 'Продолжай задачу' },
         { kind: 'out', text: '' },
         { kind: 'out', text: `⏺ ${title} is now hooking engine events.`, tone: 'green' },
       );
@@ -486,13 +486,13 @@ export default function ComponentTerminal(props: ComponentTerminalProps) {
             setRunId((n) => n + 1);
           }}
           className="flex items-center gap-1.5 rounded-md border border-[#30363d] px-2 py-1 font-mono text-[10px] text-[#7d8590] transition-colors hover:border-[#d57455] hover:text-[#d57455]"
-          aria-label="Replay terminal animation"
+          aria-label="Повторить анимацию терминала"
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 12a9 9 0 11-2.64-6.36" />
             <polyline points="21 3 21 8 16 8" />
           </svg>
-          Replay
+          Повторить
         </button>
       </div>
 

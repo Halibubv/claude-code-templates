@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { plural } from '../lib/ru';
 
 interface Plugin {
   slug: string;
@@ -25,7 +26,7 @@ const TAG_COLORS: Record<string, string> = {
 };
 
 function formatStars(stars: number): string {
-  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1)}k`;
+  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1).replace('.', ',')} тыс.`;
   return String(stars);
 }
 
@@ -77,7 +78,7 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
           </svg>
           <input
             type="text"
-            placeholder="Search plugins by name, author, or tag..."
+            placeholder="Поиск плагинов по названию, автору или тегу..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-200"
@@ -98,6 +99,8 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
           {search && (
             <button
               onClick={() => setSearch('')}
+              aria-label="Сбросить"
+              title="Сбросить"
               className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center transition-colors hover:opacity-80"
               style={{
                 background: 'var(--color-surface-3)',
@@ -130,7 +133,7 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
-            Stars
+            Звёзды
           </button>
           <div style={{ width: '1px', height: '20px', background: 'var(--color-border)' }} />
           <button
@@ -144,7 +147,7 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path d="M3 6h7M3 12h10M3 18h5M16 6l3 3m0 0l3-3m-3 3V3m0 18l-3-3m3 3l3-3m-3 3V12" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            A-Z
+            А–Я
           </button>
         </div>
       </div>
@@ -152,7 +155,7 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
       {/* Results count */}
       {search && (
         <p className="text-[12px] mb-4" style={{ color: 'var(--color-text-tertiary)' }}>
-          {filtered.length} {filtered.length === 1 ? 'result' : 'results'} for "{search}"
+          {plural(filtered.length, ['Найден', 'Найдено', 'Найдено'])} {filtered.length} {plural(filtered.length, ['результат', 'результата', 'результатов'])} по запросу «{search}»
         </p>
       )}
 
@@ -177,10 +180,10 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
             <path d="m21 21-4.35-4.35" strokeLinecap="round" />
           </svg>
           <p className="text-[14px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-            No plugins found
+            Плагины не найдены
           </p>
           <p className="text-[12px] mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-            Try a different search term
+            Попробуйте другой запрос
           </p>
         </div>
       ) : (
@@ -232,7 +235,7 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
                     {plugin.name}
                   </h3>
                   <p className="text-[12px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    by {plugin.author}
+                    {plugin.author}
                   </p>
                 </div>
 

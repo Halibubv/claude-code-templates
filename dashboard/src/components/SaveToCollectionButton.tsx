@@ -52,7 +52,7 @@ function PageSaveButton({ saved, onClick, title, buttonRef }: { saved: boolean; 
       <svg className={`w-4 h-4 ${saved ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-secondary)]'}`} fill={saved ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d={BOOKMARK_PATH} />
       </svg>
-      {saved ? 'Saved' : 'Save'}
+      {saved ? 'Сохранено' : 'Сохранить'}
     </button>
   );
 }
@@ -246,20 +246,20 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   }
 
   // The page button keeps its place while Clerk loads, so the header does not shift.
-  if (!isLoaded) return variant === 'button' ? <PageSaveButton saved={false} title="Save to collection" /> : null;
+  if (!isLoaded) return variant === 'button' ? <PageSaveButton saved={false} title="Сохранить в коллекцию" /> : null;
 
   const isSaved = savedIn.size > 0;
 
   // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
     if (variant === 'button') {
-      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); signInToSave(); }} />;
+      return <PageSaveButton saved={false} title="Войдите, чтобы сохранить" onClick={(e) => { e.stopPropagation(); signInToSave(); }} />;
     }
     return (
       <button
         onClick={(e) => { e.stopPropagation(); signInToSave(); }}
         className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
-        title="Sign in to save"
+        title="Войдите, чтобы сохранить"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
@@ -271,7 +271,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   return (
     <div className="relative" ref={dropdownRef}>
       {variant === 'button' ? (
-        <PageSaveButton saved={isSaved} title={isSaved ? 'Saved to collection' : 'Save to collection'} onClick={handleToggle} buttonRef={buttonRef} />
+        <PageSaveButton saved={isSaved} title={isSaved ? 'Сохранено в коллекции' : 'Сохранить в коллекцию'} onClick={handleToggle} buttonRef={buttonRef} />
       ) : (
       <button
         ref={buttonRef}
@@ -281,7 +281,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
             ? 'text-blue-400'
             : 'text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10'
         }`}
-        title={isSaved ? 'Saved to collection' : 'Save to collection'}
+        title={isSaved ? 'Сохранено в коллекции' : 'Сохранить в коллекцию'}
       >
         <svg className="w-3.5 h-3.5" fill={isSaved ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
@@ -298,12 +298,12 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
           ) : (
             <>
               <div className="px-3 py-1.5 text-[11px] font-medium text-[var(--color-text-tertiary)] uppercase tracking-wide">
-                Save to collection
+                Сохранить в коллекцию
               </div>
 
               {collections.length === 0 && (
                 <div className="px-3 py-2 text-[12px] text-[var(--color-text-tertiary)]">
-                  No collections yet
+                  Коллекций пока нет
                 </div>
               )}
 
@@ -339,7 +339,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                     onChange={(e) => setNewName(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
                     onClick={(e) => e.stopPropagation()}
-                    placeholder="New collection..."
+                    placeholder="Новая коллекция..."
                     className="flex-1 bg-transparent border-none text-[16px] md:text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-1 py-1 outline-none"
                     maxLength={100}
                   />
@@ -348,7 +348,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                     disabled={!newName.trim() || creating}
                     className="text-[11px] px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 transition-colors"
                   >
-                    {creating ? '...' : 'Add'}
+                    {creating ? '...' : 'Добавить'}
                   </button>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export async function resolveStackItems(items: StackItem[], fetchByType: FetchBy
 }
 
 export function stackCollectionName(created: string): string {
-  return `My stack (${created})`;
+  return `Мой стек (${created})`;
 }
 
 export interface SaveStackResult { collection: Collection; saved: number; missing: number; failed: number }
@@ -43,7 +43,7 @@ export async function saveStackAsCollection(
 ): Promise<SaveStackResult> {
   const resolved = await resolveStackItems(stack.items, fetchByType);
   const found = resolved.filter((r) => r.entry);
-  if (found.length === 0) throw new Error('None of these components is in the catalog any more');
+  if (found.length === 0) throw new Error('Ни одного из этих компонентов больше нет в каталоге');
 
   const collection = await api.create(token, stackCollectionName(stack.created));
   const added: CollectionItem[] = [];

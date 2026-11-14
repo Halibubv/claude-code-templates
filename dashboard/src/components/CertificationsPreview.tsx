@@ -23,16 +23,16 @@ export default function CertificationsPreview() {
       <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-0)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] font-bold text-[var(--color-text-primary)] uppercase tracking-wider">Certifications</span>
+            <span className="font-mono text-[11px] font-bold text-[var(--color-text-primary)] uppercase tracking-wider">Сертификации</span>
             <span className="font-mono text-[9px] font-medium bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/20">
               {data.items.length}
             </span>
           </div>
           <a href="/certifications" className="font-mono text-[10px] text-[var(--color-text-tertiary)] hover:text-[var(--color-accent)] transition-colors">
-            view all →
+            все →
           </a>
         </div>
-        <p className="font-mono text-[9px] text-[var(--color-text-tertiary)] mt-0.5">Certifications &amp; courses</p>
+        <p className="font-mono text-[9px] text-[var(--color-text-tertiary)] mt-0.5">Сертификации и курсы</p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1.5">

@@ -1,12 +1,18 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
+import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 
+// Русская версия: на Vercel (там при сборке есть переменная VERCEL=1)
+// сайт собирается адаптером Vercel, в остальных случаях — как в оригинале,
+// под Cloudflare Pages.
+const onVercel = Boolean(process.env.VERCEL);
+
 export default defineConfig({
-  site: 'https://www.aitmpl.com',
+  site: process.env.SITE_URL || 'https://www.aitmpl.com',
   output: 'server',
-  adapter: cloudflare({ mode: 'directory' }),
+  adapter: onVercel ? vercel() : cloudflare({ mode: 'directory' }),
   integrations: [react()],
   vite: {
     plugins: [
@@ -14,7 +20,8 @@ export default defineConfig({
       {
         name: 'cloudflare-react-dom-server',
         config(_config, { command }) {
-          if (command === 'build') {
+          // Подмена react-dom/server нужна только рантайму Cloudflare.
+          if (command === 'build' && !onVercel) {
             return {
               resolve: {
                 alias: [

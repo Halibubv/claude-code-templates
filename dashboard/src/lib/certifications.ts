@@ -156,8 +156,8 @@ export function isHttpUrl(url: unknown): url is string {
 }
 
 export function formatPrice(price: LearningItem['price']): string {
-  if (price === undefined) return 'See price';
-  if (price === null || price.amount === 0) return 'Free';
+  if (price === undefined) return 'Цена на сайте';
+  if (price === null || price.amount === 0) return 'Бесплатно';
   const symbol = price.currency === 'USD' ? '$' : `${price.currency} `;
   return `${symbol}${price.amount}`;
 }

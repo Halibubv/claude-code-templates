@@ -12,8 +12,8 @@ import {
 } from '../src/lib/component-page.ts';
 
 test('pluginContentsSummary counts each kind in a fixed order, singular for one', () => {
-  assert.equal(pluginContentsSummary({ agents: ['repo-scout'], skills: ['climb', 'faq'] }), '2 skills, 1 agent');
-  assert.equal(pluginContentsSummary({ mcpServers: ['db'], hooks: ['PostToolUse', 'Stop'], skills: [] }), '2 hook events, 1 MCP server');
+  assert.equal(pluginContentsSummary({ agents: ['repo-scout'], skills: ['climb', 'faq'] }), '2 скилла, 1 агент');
+  assert.equal(pluginContentsSummary({ mcpServers: ['db'], hooks: ['PostToolUse', 'Stop'], skills: [] }), '2 события хуков, 1 MCP-сервер');
   assert.equal(pluginContentsSummary(undefined), '');
 });
 
@@ -23,13 +23,13 @@ const REX = [
 ];
 
 test('formatBytes', () => {
-  assert.equal(formatBytes(900), '900 B');
-  assert.equal(formatBytes(17121), '16.7 KB');
-  assert.equal(formatBytes(3 * 1024 * 1024), '3.0 MB');
+  assert.equal(formatBytes(900), '900 Б');
+  assert.equal(formatBytes(17121), '16,7 КБ');
+  assert.equal(formatBytes(3 * 1024 * 1024), '3,0 МБ');
 });
 
 test('formatDate keeps the commit author day', () => {
-  assert.equal(formatDate('2026-10-30T23:21:18-04:00'), 'Oct 30, 2026');
+  assert.equal(formatDate('2026-10-30T23:21:18-04:00'), '30 октября 2026');
   assert.equal(formatDate(undefined), '');
   assert.equal(formatDate('garbage'), '');
 });

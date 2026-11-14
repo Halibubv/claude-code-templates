@@ -2,6 +2,8 @@
 // built by scripts/generate_trending_data.py from the client_* columns that
 // CLI >= 1.32.0 reports (cli-tool/src/agent-detection.js). Display only.
 
+import { formatNumber, plural } from '../lib/ru';
+
 export interface ClientSplit {
   since: string | null;
   totals: { agent: number; human: number; nonInteractive: number; unknown: number };
@@ -19,9 +21,9 @@ export interface ClientSplit {
 type Kind = 'agent' | 'human' | 'nonInteractive';
 
 const KINDS: { key: Kind; label: string; hint: string; color: string }[] = [
-  { key: 'agent', label: 'AI agents', hint: 'Run from Claude Code, Cursor, Codex and other agents', color: 'var(--color-accent)' },
-  { key: 'human', label: 'People', hint: 'Typed in an interactive terminal', color: 'var(--color-primary-400)' },
-  { key: 'nonInteractive', label: 'Scripts', hint: 'No terminal and no agent: CI-like scripts, pipes', color: 'var(--color-text-tertiary)' },
+  { key: 'agent', label: 'ИИ-агенты', hint: 'Запуск из Claude Code, Cursor, Codex и других агентов', color: 'var(--color-accent)' },
+  { key: 'human', label: 'Люди', hint: 'Ввод в интерактивном терминале', color: 'var(--color-primary-400)' },
+  { key: 'nonInteractive', label: 'Скрипты', hint: 'Без терминала и агента: скрипты вроде CI, пайпы', color: 'var(--color-text-tertiary)' },
 ];
 
 const AGENT_NAMES: Record<string, string> = {
@@ -38,18 +40,18 @@ const AGENT_NAMES: Record<string, string> = {
   devin: 'Devin',
   replit: 'Replit',
   v0: 'v0',
-  other: 'Other',
+  other: 'Другие',
 };
 
 function pct(n: number, total: number): string {
   if (!total) return '0%';
   const p = (n / total) * 100;
-  return (p < 10 ? p.toFixed(1) : Math.round(p).toString()) + '%';
+  return (p < 10 ? p.toFixed(1).replace('.', ',') : Math.round(p).toString()) + '%';
 }
 
 function shortDate(iso: string): string {
   const d = new Date(iso + 'T00:00:00Z');
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  return d.toLocaleDateString('ru-RU', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 function BarList({ title, rows, total, names }: {
@@ -62,7 +64,7 @@ function BarList({ title, rows, total, names }: {
     <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl p-4">
       <div className="text-[12px] text-[var(--color-text-secondary)] font-semibold uppercase tracking-wider mb-3">{title}</div>
       {rows.length === 0 ? (
-        <p className="text-[12px] text-[var(--color-text-tertiary)]">No data yet.</p>
+        <p className="text-[12px] text-[var(--color-text-tertiary)]">Данных пока нет.</p>
       ) : (
         <ul className="flex flex-col gap-2.5">
           {rows.map((r) => (
@@ -70,7 +72,7 @@ function BarList({ title, rows, total, names }: {
               <div className="flex items-baseline justify-between gap-3 mb-1">
                 <span className="text-[13px] text-[var(--color-text-primary)] truncate">{names?.[r.name] ?? r.name}</span>
                 <span className="text-[12px] text-[var(--color-text-tertiary)] tabular-nums shrink-0">
-                  {r.downloads.toLocaleString('en-US')} · {pct(r.downloads, total)}
+                  {formatNumber(r.downloads)} · {pct(r.downloads, total)}
                 </span>
               </div>
               <div className="h-1.5 rounded-full bg-[var(--color-surface-3)] overflow-hidden">
@@ -88,10 +90,10 @@ export default function AgentSplitView({ split }: { split?: ClientSplit }) {
   if (!split || !split.since) {
     return (
       <div className="px-6 py-16 text-center max-w-md mx-auto">
-        <p className="text-[14px] text-[var(--color-text-primary)] font-medium mb-2">Collecting data</p>
+        <p className="text-[14px] text-[var(--color-text-primary)] font-medium mb-2">Собираем данные</p>
         <p className="text-[12px] text-[var(--color-text-tertiary)] leading-relaxed">
-          Installs made with CLI 1.32.0 or newer report whether an AI agent or a person ran them.
-          This view fills in as those installs arrive; the data refreshes once a day.
+          Установки через CLI 1.32.0 и новее сообщают, кто их запустил: ИИ-агент или человек.
+          Раздел заполняется по мере поступления таких установок, данные обновляются раз в сутки.
         </p>
       </div>
     );
@@ -109,8 +111,8 @@ export default function AgentSplitView({ split }: { split?: ClientSplit }) {
   return (
     <div className="px-6 pb-8 flex flex-col gap-4">
       <p className="text-[12px] text-[var(--color-text-tertiary)]">
-        Installs from CLI 1.32.0+ since {shortDate(split.since)} ({reported.toLocaleString('en-US')} installs).{' '}
-        {totals.unknown.toLocaleString('en-US')} installs from older CLI versions in the same window don't report and are left out.
+        Установки из CLI 1.32.0+ с {shortDate(split.since)} ({formatNumber(reported)} {plural(reported, ['установка', 'установки', 'установок'])}).{' '}
+        Ещё {formatNumber(totals.unknown)} {plural(totals.unknown, ['установка', 'установки', 'установок'])} за тот же период сделаны старыми версиями CLI, они не передают эти данные и не учтены.
       </p>
 
       {/* Share cards */}
@@ -125,7 +127,7 @@ export default function AgentSplitView({ split }: { split?: ClientSplit }) {
               {pct(totals[k.key], reported)}
             </div>
             <div className="text-[11px] text-[var(--color-text-tertiary)]">
-              {totals[k.key].toLocaleString('en-US')} installs · {k.hint}
+              {formatNumber(totals[k.key])} {plural(totals[k.key], ['установка', 'установки', 'установок'])} · {k.hint}
             </div>
           </div>
         ))}
@@ -133,15 +135,15 @@ export default function AgentSplitView({ split }: { split?: ClientSplit }) {
 
       {/* Daily stacked bars */}
       <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl p-4">
-        <div className="text-[12px] text-[var(--color-text-secondary)] font-semibold uppercase tracking-wider mb-3">Installs per day</div>
-        <div className="flex items-end gap-1 h-40" role="img" aria-label="Installs per day by who ran the CLI">
+        <div className="text-[12px] text-[var(--color-text-secondary)] font-semibold uppercase tracking-wider mb-3">Установки по дням</div>
+        <div className="flex items-end gap-1 h-40" role="img" aria-label="Установки по дням: кто запускал CLI">
           {days.map((d) => {
             const total = d.agent + d.human + d.nonInteractive;
             return (
               <div
                 key={d.date}
                 className="flex-1 min-w-0 max-w-[48px] h-full flex flex-col justify-end"
-                title={`${shortDate(d.date)}: ${d.agent} agents, ${d.human} people, ${d.nonInteractive} scripts`}
+                title={`${shortDate(d.date)}: агенты — ${d.agent}, люди — ${d.human}, скрипты — ${d.nonInteractive}`}
               >
                 <div className="flex flex-col-reverse rounded-sm overflow-hidden" style={{ height: `${(total / maxDay) * 100}%` }}>
                   {KINDS.map((k) => (
@@ -159,14 +161,14 @@ export default function AgentSplitView({ split }: { split?: ClientSplit }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <BarList title="Which agent" rows={split.agents} total={totals.agent} names={AGENT_NAMES} />
-        <BarList title="Claude Code entrypoint" rows={split.entrypoints} total={totals.agent} />
+        <BarList title="Какой агент" rows={split.agents} total={totals.agent} names={AGENT_NAMES} />
+        <BarList title="Точка входа Claude Code" rows={split.entrypoints} total={totals.agent} />
       </div>
 
       <p className="text-[11px] text-[var(--color-text-tertiary)] leading-relaxed">
-        Self-reported by the CLI from environment variables, so it can be spoofed. A command a person types inside an
-        agent counts as the agent, and an agent install usually still means a person asked for it. Runs with CI=true are
-        not tracked at all.
+        CLI определяет это сам по переменным окружения, поэтому данные можно подделать. Команда, которую человек вводит
+        внутри агента, засчитывается агенту, а установка агентом обычно всё равно означает, что об этом попросил человек.
+        Запуски с CI=true не учитываются совсем.
       </p>
     </div>
   );

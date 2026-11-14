@@ -6,6 +6,7 @@ import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
 import { VALID_TYPES, TYPE_CONFIG, ICONS } from '../lib/icons';
 import { skillsPageMeta } from '../lib/list-page-meta';
+import { TYPE_LABELS_RU } from '../lib/ru';
 import counts from '../../public/counts.json';
 
 export const prerender = true;
@@ -13,42 +14,42 @@ export const prerender = true;
 const TYPE_META: Record<string, { title: string; description: string; tagline: string; h1?: string }> = {
   skills: {
     ...skillsPageMeta((counts as Record<string, number>).skills),
-    tagline: 'Pre-built templates and configurations to supercharge your AI workflow'
+    tagline: 'Готовые шаблоны и конфигурации, чтобы прокачать работу с ИИ'
   },
   agents: {
-    title: '600+ AI Agents for Claude Code — Development, Security, DevOps',
-    description: '600+ specialized AI agents for Claude Code. Frontend, backend, security, DevOps, data science, and more. Install with a single npx command.',
-    tagline: 'Specialized AI agents for every development task'
+    title: '600+ ИИ-агентов для Claude Code: разработка, безопасность, DevOps',
+    description: '600+ специализированных ИИ-агентов для Claude Code: фронтенд, бэкенд, безопасность, DevOps, data science и другое. Установка одной командой npx.',
+    tagline: 'Специализированные ИИ-агенты для любых задач разработки'
   },
   commands: {
-    title: '200+ Slash Commands for Claude Code Workflows',
-    description: '200+ custom slash commands for Claude Code. Automate testing, deployment, code review, and more. Install with a single npx command.',
-    tagline: 'Custom slash commands to automate your workflow'
+    title: '200+ слэш-команд для рабочих процессов в Claude Code',
+    description: '200+ пользовательских слэш-команд для Claude Code: автоматизация тестирования, деплоя, код-ревью и не только. Установка одной командой npx.',
+    tagline: 'Слэш-команды для автоматизации рабочих процессов'
   },
   settings: {
-    title: 'Claude Code Settings: 60+ Configuration Templates',
-    description: '60+ configuration templates for Claude Code. Statuslines, permissions, model settings, and more. Install with a single npx command.',
-    tagline: 'Configuration templates for optimal Claude Code setup'
+    title: 'Настройки Claude Code: 60+ шаблонов конфигурации',
+    description: '60+ шаблонов конфигурации для Claude Code: строки состояния, разрешения, настройки модели и другое. Установка одной командой npx.',
+    tagline: 'Шаблоны конфигурации для удобной настройки Claude Code'
   },
   hooks: {
-    title: '39+ Claude Code Hooks: Automation Triggers & Scripts',
-    description: '39+ automation hooks for Claude Code. Git hooks, notification triggers, and custom scripts. Install with a single npx command.',
-    tagline: 'Automation triggers and scripts for seamless integration'
+    title: '39+ хуков Claude Code: триггеры и скрипты автоматизации',
+    description: '39+ хуков автоматизации для Claude Code: Git-хуки, триггеры уведомлений и собственные скрипты. Установка одной командой npx.',
+    tagline: 'Триггеры и скрипты автоматизации для бесшовной интеграции'
   },
   mcps: {
-    title: '55+ MCP Integrations for Claude Code — External Services',
-    description: '55+ Model Context Protocol integrations for Claude Code. Connect to databases, APIs, and external services. Install with a single npx command.',
-    tagline: 'Connect to databases, APIs, and external services'
+    title: '55+ MCP-интеграций для Claude Code: внешние сервисы',
+    description: '55+ интеграций Model Context Protocol для Claude Code: подключение к базам данных, API и внешним сервисам. Установка одной командой npx.',
+    tagline: 'Подключение к базам данных, API и внешним сервисам'
   },
   loops: {
-    title: 'Claude Code Loops: Autonomous Agentic Workflows (Loop Engineering)',
-    description: 'Ready-to-run agentic loops for Claude Code. Each loop defines a goal, an interval, and a stop condition, and composes agents, skills and hooks. Install with a single npx command.',
-    tagline: 'Autonomous agentic workflows that run until the job is done'
+    title: 'Циклы Claude Code: автономные агентные процессы (Loop Engineering)',
+    description: 'Готовые агентные циклы для Claude Code. У каждого цикла есть цель, интервал и условие остановки, а внутри он объединяет агентов, скиллы и хуки. Установка одной командой npx.',
+    tagline: 'Автономные агентные процессы, которые работают, пока задача не решена'
   },
   mods: {
-    title: 'Claude Code Mods (Function Hooks): TypeScript Plugins That Rewrite, Deny, Cache and Draw',
-    description: 'Claude Mods for Claude Code: plugins built on function hooks, TypeScript middleware over the $ engine interface. Deny destructive commands, redact secrets, cache WebFetch, audit every event, draw in the terminal. Available in Claude Code 2.1.287+.',
-    tagline: 'Function-hooks plugins on the $ engine interface. On by default in Claude Code 2.1.287+.'
+    title: 'Моды Claude Code (Function Hooks): TypeScript-плагины, которые переписывают, запрещают, кэшируют и рисуют',
+    description: 'Claude Mods для Claude Code: плагины на function hooks, TypeScript-middleware поверх интерфейса движка $. Блокируют опасные команды, скрывают секреты, кэшируют WebFetch, записывают каждое событие в аудит, рисуют в терминале. Доступно в Claude Code 2.1.287+.',
+    tagline: 'Плагины на function hooks поверх интерфейса движка $. Включены по умолчанию в Claude Code 2.1.287+.'
   },
 };
 
@@ -57,6 +58,8 @@ const { type } = Astro.params;
 const activeType = type && VALID_TYPES.includes(type) ? type : 'skills';
 const config = TYPE_CONFIG[activeType];
 const meta = TYPE_META[activeType];
+// Видимое название раздела (loops нет в общем словаре, он скрыт из меню).
+const typeLabel = ({ ...TYPE_LABELS_RU, loops: 'Циклы' } as Record<string, string>)[activeType] ?? config?.label ?? activeType;
 
 export function getStaticPaths() {
   return [
@@ -73,8 +76,8 @@ export function getStaticPaths() {
 ---
 
 <DashboardLayout
-  title={meta?.title ?? `${activeType.charAt(0).toUpperCase() + activeType.slice(1)} - Claude Code Templates`}
-  description={meta?.description ?? `Browse ${activeType} for Claude Code. Install with a single npx command.`}
+  title={meta?.title ?? `${typeLabel} - Claude Code Templates`}
+  description={meta?.description ?? `${typeLabel} для Claude Code. Установка одной командой npx.`}
 >
   <TopBar />
 
@@ -102,7 +105,7 @@ export function getStaticPaths() {
         <div class="flex-1">
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-1 sm:mb-2">
             <h1 class="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
-              {meta?.h1 ?? config?.label ?? activeType}
+              {meta?.h1 ?? typeLabel}
             </h1>
           </div>
           <p class="text-[13px] sm:text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
