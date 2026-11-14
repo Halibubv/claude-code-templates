@@ -50,7 +50,7 @@ export function showToast({ message, action, duration = 6000 }: ToastOptions): v
 
   const dismiss = document.createElement('button');
   dismiss.type = 'button';
-  dismiss.setAttribute('aria-label', 'Dismiss');
+  dismiss.setAttribute('aria-label', 'Закрыть');
   dismiss.textContent = '×';
   dismiss.style.cssText =
     'flex-shrink:0;width:28px;height:28px;border:0;border-radius:6px;background:transparent;cursor:pointer;' +

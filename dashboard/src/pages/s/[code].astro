@@ -16,6 +16,7 @@ import { ICONS, TYPE_CONFIG } from '../../lib/icons';
 import { jsonForScript } from '../../lib/sanitize-html';
 import { decodeStack, groupItems, stackCommand, type HarnessEntry, type StackItem, type StackType } from '../../lib/stack-link';
 import type { Component } from '../../lib/types';
+import { plural, TYPE_LABELS_RU } from '../../lib/ru';
 
 export const prerender = false;
 
@@ -52,6 +53,7 @@ const present = catalogUnavailable ? rows : rows.filter((r) => r.component);
 const missing = catalogUnavailable ? [] : rows.filter((r) => !r.component);
 const installCmd = present.length ? stackCommand(present.map((r) => r.item)) : '';
 const total = rows.length;
+const COMPONENT_FORMS: [string, string, string] = ['компонент', 'компонента', 'компонентов'];
 
 const groups = groupItems(rows.map((r) => r.item)).map(({ type }) => ({
   type,
@@ -96,11 +98,11 @@ for (const r of rows) {
 
 const created = stack ? formatDate(stack.created) : '';
 const title = stack
-  ? `Claude Code stack: ${total} ${total === 1 ? 'component' : 'components'} | Claude Code Templates`
-  : 'Stack link not found | Claude Code Templates';
+  ? `Стек для Claude Code: ${total} ${plural(total, COMPONENT_FORMS)} | Claude Code Templates`
+  : 'Ссылка на стек не найдена | Claude Code Templates';
 const description = stack
-  ? `A Claude Code stack with ${rows.slice(0, 4).map(nameOf).join(', ')}${total > 4 ? ` and ${total - 4} more` : ''}. Install it with one command.`
-  : 'This stack link is incomplete or broken. Browse the Claude Code Templates catalog.';
+  ? `Стек для Claude Code: ${rows.slice(0, 4).map(nameOf).join(', ')}${total > 4 ? ` и ещё ${total - 4}` : ''}. Установка одной командой.`
+  : 'Ссылка на стек неполная или повреждена. Загляните в каталог Claude Code Templates.';
 ---
 
 <DashboardLayout title={title} description={description} noindex>
@@ -108,62 +110,62 @@ const description = stack
 
   {!stack ? (
     <div class="flex flex-col items-center justify-center py-32 px-6">
-      <h1 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">This stack link doesn't work</h1>
+      <h1 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">Ссылка на стек не работает</h1>
       <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
-        The link may have been cut off when it was copied. Ask for it again, or build your own stack from the catalog.
+        Возможно, ссылка обрезалась при копировании. Попросите прислать её ещё раз или соберите свой стек из каталога.
       </p>
       <a href="/" class="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] transition-colors">
-        Browse components
+        Открыть каталог
       </a>
     </div>
   ) : (
     <div class="px-4 md:px-6 py-8 max-w-4xl mx-auto space-y-8">
       <header>
-        <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Shared stack · created {created}</p>
+        <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Общий стек · создан {created}</p>
         <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
-          Claude Code stack with {total} {total === 1 ? 'component' : 'components'}
+          Стек для Claude Code: {total} {plural(total, COMPONENT_FORMS)}
         </h1>
         <p class="mt-2 text-[14px] text-[var(--color-text-secondary)] max-w-2xl">
-          Someone put these components together on aitmpl.com. Run the command below in your project to install all of them.
+          Кто-то собрал эти компоненты на aitmpl.com. Выполните команду ниже в своём проекте, чтобы установить их все.
         </p>
       </header>
 
       {catalogUnavailable && (
         <p class="text-[13px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-3 text-[var(--color-text-secondary)]">
-          We couldn't check the catalog right now, so this page can't tell whether every component still exists.
+          Сейчас не получилось проверить каталог, поэтому неизвестно, все ли компоненты в нём ещё есть.
         </p>
       )}
 
       {missing.length > 0 && (
         <p class="text-[13px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-3 text-[var(--color-text-secondary)]">
-          {missing.length === 1 ? '1 component in this stack is' : `${missing.length} components in this stack are`} no longer in the catalog.
-          {present.length > 0 ? ` The command below leaves ${missing.length === 1 ? 'it' : 'them'} out.` : ''}
+          Из этого стека в каталоге больше нет: {missing.length} {plural(missing.length, COMPONENT_FORMS)}.
+          {present.length > 0 ? ` Команда ниже ${missing.length === 1 ? 'его' : 'их'} не включает.` : ''}
         </p>
       )}
 
       {installCmd && (
         <section>
           <h2 class="text-[13px] font-semibold text-[var(--color-text-secondary)] mb-2">
-            Install {present.length === total ? 'all' : `the ${present.length} available`} {present.length === 1 ? 'component' : 'components'}
+            {present.length === total ? `Установить все компоненты (${present.length})` : `Установить доступные: ${present.length} ${plural(present.length, COMPONENT_FORMS)}`}
           </h2>
           <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden">
             <pre id="stackCmd" class="m-0 p-4 text-[13px] font-mono text-[var(--color-text-primary)] whitespace-pre-wrap break-all leading-relaxed"><code>{installCmd}</code></pre>
             <div class="flex flex-wrap gap-2 border-t border-[var(--color-border)] px-3 py-2.5">
               <button id="stackCopy" type="button" data-item-count={present.length} class="hidden md:inline-flex h-9 items-center gap-1.5 px-3 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold hover:opacity-90 transition-opacity">
-                Copy command
+                Копировать команду
               </button>
               <button id="stackShare" type="button" data-item-count={present.length} class="md:hidden inline-flex h-10 w-full items-center justify-center gap-1.5 px-3 rounded-md bg-[var(--color-accent)] text-white text-[14px] font-semibold">
-                Send to your computer
+                Отправить на компьютер
               </button>
               <button id="stackOpen" type="button" class="inline-flex h-10 md:h-9 w-full md:w-auto items-center justify-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[14px] md:text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">
-                Add to my stack
+                Добавить в мой стек
               </button>
               <button id="stackCopyPhone" type="button" data-item-count={present.length} class="md:hidden w-full text-center text-[12px] text-[var(--color-text-tertiary)] py-1">
-                Copy command
+                Копировать команду
               </button>
             </div>
           </div>
-          <p class="mt-2 text-[12px] text-[var(--color-text-tertiary)] md:hidden">npx runs on a computer, not on a phone.</p>
+          <p class="mt-2 text-[12px] text-[var(--color-text-tertiary)] md:hidden">npx запускается на компьютере, а не на телефоне.</p>
         </section>
       )}
 
@@ -173,7 +175,7 @@ const description = stack
         <section>
           <h2 class="flex items-center gap-2 text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">
             <span class="inline-flex text-[var(--color-text-tertiary)]" set:html={ICONS[group.type] ?? ''} />
-            {group.config?.label ?? group.type}
+            {TYPE_LABELS_RU[group.type] ?? group.config?.label ?? group.type}
             <span class="text-[12px] font-normal text-[var(--color-text-tertiary)]">{group.rows.length}</span>
           </h2>
           <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 list-none p-0 m-0">
@@ -184,7 +186,7 @@ const description = stack
                   <div class="flex items-center gap-2">
                     <span class="text-[14px] font-semibold text-[var(--color-text-primary)] truncate">{nameOf(r)}</span>
                     {gone && (
-                      <span class="shrink-0 text-[11px] px-1.5 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-text-tertiary)]">No longer in the catalog</span>
+                      <span class="shrink-0 text-[11px] px-1.5 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-text-tertiary)]">Больше нет в каталоге</span>
                     )}
                   </div>
                   <div class="text-[12px] text-[var(--color-text-tertiary)]">{categoryOf(r)}</div>
@@ -208,7 +210,7 @@ const description = stack
       ))}
 
       <p class="text-[13px] text-[var(--color-text-secondary)]">
-        Want your own? Add components to your stack from the <a href="/" class="text-[var(--color-accent)] hover:underline">catalog</a>, then use "Copy stack link".
+        Хотите свой? Добавьте компоненты в стек из <a href="/" class="text-[var(--color-accent)] hover:underline">каталога</a> и скопируйте ссылку на стек.
       </p>
     </div>
   )}
@@ -228,6 +230,7 @@ const description = stack
   <script>
     import { track } from '../../lib/analytics';
     import { showToast } from '../../lib/toast';
+    import { plural } from '../../lib/ru';
 
     const cmd = () => document.getElementById('stackCmd')?.textContent?.trim() ?? '';
     const count = (el: HTMLElement) => Number(el.dataset.itemCount) || 0;
@@ -247,7 +250,7 @@ const description = stack
         if (!(await copy(cmd()))) return;
         track('copy_stack_command', { item_count: count(btn), source: 'stack_page' });
         const label = btn.textContent;
-        btn.textContent = 'Copied!';
+        btn.textContent = 'Скопировано!';
         setTimeout(() => { btn.textContent = label; }, 2000);
       });
     }
@@ -258,7 +261,7 @@ const description = stack
       const item_count = count(share);
       if (typeof navigator.share === 'function') {
         try {
-          await navigator.share({ title: document.title, text: 'Install this Claude Code stack from your computer:', url });
+          await navigator.share({ title: document.title, text: 'Установите этот стек для Claude Code с компьютера:', url });
           track('share_component', { kind: 'stack', method: 'share', item_count, source: 'stack_page' });
           return;
         } catch (err) {
@@ -267,7 +270,7 @@ const description = stack
       }
       if (await copy(url)) {
         track('share_component', { kind: 'stack', method: 'copy', item_count, source: 'stack_page' });
-        showToast({ message: 'Link copied. Open it on your computer to install the stack.' });
+        showToast({ message: 'Ссылка скопирована. Откройте её на компьютере, чтобы установить стек.' });
       }
     });
 
@@ -288,7 +291,7 @@ const description = stack
       try { localStorage.setItem('claudeCodeCart', JSON.stringify(cart)); } catch { /* private mode: the event still updates this page */ }
       window.dispatchEvent(new CustomEvent('cart-updated', { detail: cart }));
       track('stack_open_in_builder', { item_count: data.items?.length ?? 0 });
-      showToast({ message: added ? `Added ${added} ${added === 1 ? 'component' : 'components'} to your stack.` : 'These components are already in your stack.' });
+      showToast({ message: added ? `В стек ${plural(added, ['добавлен', 'добавлено', 'добавлено'])}: ${added} ${plural(added, ['компонент', 'компонента', 'компонентов'])}.` : 'Эти компоненты уже в вашем стеке.' });
     });
   </script>
 </DashboardLayout>

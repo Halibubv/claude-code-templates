@@ -8,6 +8,7 @@ export const prerender = true;
 
 import fs from 'node:fs';
 import nodePath from 'node:path';
+import { plural, TYPE_LABELS_RU } from '../../lib/ru';
 
 const pluginsFilePath = nodePath.join(process.cwd(), 'public', 'plugins.json');
 let allPlugins: any[] = [];
@@ -25,7 +26,7 @@ const plugin = allPlugins.find((p: any) => p.slug === slug);
 if (!plugin) return Astro.redirect('/plugins');
 
 function formatStars(stars: number): string {
-  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1)}k`;
+  if (stars >= 1000) return `${(stars / 1000).toFixed(stars >= 10000 ? 0 : 1).replace('.', ',')} тыс.`;
   return String(stars);
 }
 
@@ -39,6 +40,9 @@ const TAG_COLORS: Record<string, string> = {
   settings: '#8b5cf6',
   rules: '#ec4899',
 };
+
+// Подписи типов для показа; ключи type остаются как в данных.
+const typeLabel = (type: string) => TYPE_LABELS_RU[type] ?? ({ lsps: 'LSP', rules: 'Правила' } as Record<string, string>)[type] ?? type;
 
 const isMarketplace = plugin.type === 'marketplace';
 const pluginsList: any[] = plugin.plugins_list ?? [];
@@ -55,7 +59,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
 ---
 
 <DashboardLayout
-  title={`${plugin.name} — Claude Code Plugin`}
+  title={`${plugin.name} — плагин для Claude Code`}
   description={plugin.description}
 >
   <TopBar />
@@ -63,7 +67,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
   <!-- Breadcrumb -->
   <div class="px-6 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-0)]">
     <nav class="flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)]">
-      <a href="/plugins" class="hover:text-[var(--color-text-primary)] transition-colors">Plugins</a>
+      <a href="/plugins" class="hover:text-[var(--color-text-primary)] transition-colors">Плагины</a>
       <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
       <span class="text-[var(--color-text-primary)] font-medium">{plugin.name}</span>
     </nav>
@@ -92,17 +96,17 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
             </h1>
             <span class="text-[12px] font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/15 to-amber-400/15 text-yellow-400 flex items-center gap-1.5 border border-yellow-500/25">
               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              {formatStars(plugin.stars)} stars
+              {formatStars(plugin.stars)} {plugin.stars >= 1000 ? 'звёзд' : plural(plugin.stars, ['звезда', 'звезды', 'звёзд'])}
             </span>
             {isMarketplace && (
               <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.25);">
-                Marketplace
+                Маркетплейс
               </span>
             )}
           </div>
 
           <p class="text-[13px] text-[var(--color-text-tertiary)] mb-3">
-            by <span class="text-[var(--color-text-secondary)] font-medium">{plugin.author}</span>
+            Автор: <span class="text-[var(--color-text-secondary)] font-medium">{plugin.author}</span>
           </p>
 
           <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mb-4">
@@ -130,7 +134,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-text-primary)] text-[var(--color-surface-0)] text-[13px] font-semibold hover:opacity-90 transition-all duration-200 no-underline"
             >
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-              View on GitHub
+              Открыть на GitHub
             </a>
             {plugin.website && (
               <a
@@ -140,7 +144,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-surface-3)] text-[var(--color-text-primary)] text-[13px] font-semibold border border-[var(--color-border)] hover:bg-[var(--color-surface-4)] transition-all duration-200 no-underline"
               >
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
-                Visit Website
+                Сайт проекта
               </a>
             )}
           </div>
@@ -154,13 +158,13 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
 
     <!-- Install Commands -->
     <div>
-      <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Install</h2>
+      <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Установка</h2>
       <div class="space-y-3">
         <!-- Step 1: Add marketplace -->
         <div>
           <div class="flex items-center gap-2 mb-2">
             <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style="background: #ffd93d25; color: #ffd93d;">1</span>
-            <span class="text-[13px] text-[var(--color-text-secondary)]">Add the marketplace to Claude Code</span>
+            <span class="text-[13px] text-[var(--color-text-secondary)]">Добавьте маркетплейс в Claude Code</span>
           </div>
           <pre class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono"><code>{addMarketplaceCmd}</code></pre>
         </div>
@@ -171,8 +175,8 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
             <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style="background: #ffd93d25; color: #ffd93d;">2</span>
             <span class="text-[13px] text-[var(--color-text-secondary)]">
               {isMarketplace
-                ? 'Install any plugin from the marketplace'
-                : 'Install the plugin'
+                ? 'Установите любой плагин из маркетплейса'
+                : 'Установите плагин'
               }
             </span>
           </div>
@@ -186,7 +190,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
         <!-- Tip -->
         <div class="flex items-start gap-2 px-4 py-3 rounded-lg text-[12px]" style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); color: rgba(147, 197, 253, 0.9);">
           <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Or use <code class="font-mono px-1 py-0.5 rounded bg-[var(--color-surface-3)]">/plugin</code> to open the interactive plugin manager and browse the Discover tab.</span>
+          <span>Или откройте интерактивный менеджер плагинов командой <code class="font-mono px-1 py-0.5 rounded bg-[var(--color-surface-3)]">/plugin</code> и загляните во вкладку Discover.</span>
         </div>
       </div>
     </div>
@@ -194,15 +198,15 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
     <!-- Stats Overview (for marketplaces) -->
     {isMarketplace && pluginCount > 0 && (
       <div>
-        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Overview</h2>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Обзор</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <div class="p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
-            <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">Plugins</div>
+            <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">Плагины</div>
             <div class="text-2xl font-bold" style="color: #ffd93d;">{pluginCount}</div>
           </div>
           {Object.entries(componentsTotals).map(([type, count]) => (
             <div class="p-5 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
-              <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">{type}</div>
+              <div class="text-[12px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-medium">{typeLabel(type)}</div>
               <div class="text-2xl font-bold" style={`color: ${TAG_COLORS[type] ?? '#888'};`}>{count}</div>
             </div>
           ))}
@@ -213,7 +217,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
     <!-- Plugin Manifest (for individual plugins) -->
     {!isMarketplace && Object.keys(manifest).length > 0 && (
       <div>
-        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Components</h2>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Компоненты</h2>
         <div class="space-y-5">
           {Object.entries(manifest).map(([type, items]: [string, any]) => (
             <div>
@@ -222,10 +226,10 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
                   class="text-[11px] font-semibold px-2.5 py-1 rounded-full border uppercase tracking-wider"
                   style={`background: ${TAG_COLORS[type] ?? '#666'}15; color: ${TAG_COLORS[type] ?? '#666'}; border-color: ${TAG_COLORS[type] ?? '#666'}30;`}
                 >
-                  {type}
+                  {typeLabel(type)}
                 </span>
                 <span class="text-[12px] text-[var(--color-text-tertiary)]">
-                  {Array.isArray(items) ? items.length : Object.keys(items).length} items
+                  {(() => { const n = Array.isArray(items) ? items.length : Object.keys(items).length; return `${n} ${plural(n, ['элемент', 'элемента', 'элементов'])}`; })()}
                 </span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -259,7 +263,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
     <!-- Highlights -->
     {plugin.highlights && plugin.highlights.length > 0 && (
       <div>
-        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Highlights</h2>
+        <h2 class="text-lg font-bold text-[var(--color-text-primary)] mb-4">Главное</h2>
         <div class="space-y-3">
           {plugin.highlights.map((highlight: string) => (
             <div class="flex items-start gap-3 p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)]" style="box-shadow: var(--shadow-card);">
@@ -277,7 +281,7 @@ const pluginName = plugin.plugin_name ?? plugin.slug;
     <div class="pt-4">
       <a href="/plugins" class="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors no-underline">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Back to all plugins
+        Ко всем плагинам
       </a>
     </div>
   </div>

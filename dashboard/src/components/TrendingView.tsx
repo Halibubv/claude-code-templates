@@ -3,6 +3,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import CountryFlag from './CountryFlag';
 import AgentSplitView, { type ClientSplit } from './AgentSplitView';
+import { plural, TYPE_LABELS_RU } from '../lib/ru';
 
 interface TrendingItem {
   id: string;
@@ -44,8 +45,8 @@ function formatName(name: string): string {
 }
 
 function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' млн';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' тыс.';
   return String(n);
 }
 
@@ -91,7 +92,7 @@ export default function TrendingView() {
     return (
       <div className="px-6 py-20 flex flex-col items-center gap-3">
         <div className="w-5 h-5 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin" />
-        <span className="text-[13px] text-[var(--color-text-tertiary)]">Loading trending data...</span>
+        <span className="text-[13px] text-[var(--color-text-tertiary)]">Загружаем данные...</span>
       </div>
     );
   }
@@ -99,7 +100,7 @@ export default function TrendingView() {
   if (!data) {
     return (
       <div className="px-6 py-20 text-center">
-        <p className="text-[13px] text-red-400">Failed to load trending data</p>
+        <p className="text-[13px] text-red-400">Не удалось загрузить данные</p>
       </div>
     );
   }
@@ -119,8 +120,8 @@ export default function TrendingView() {
               </svg>
             </div>
             <div>
-              <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Trending Components</h1>
-              <p className="text-[12px] text-[var(--color-text-tertiary)] mt-0.5">Most popular downloads this week</p>
+              <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Компоненты в тренде</h1>
+              <p className="text-[12px] text-[var(--color-text-tertiary)] mt-0.5">Самые скачиваемые за неделю</p>
             </div>
           </div>
 
@@ -128,7 +129,7 @@ export default function TrendingView() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { 
-                label: 'Total Downloads', 
+                label: 'Всего загрузок', 
                 value: formatNumber(stats.totalDownloads),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,7 +139,7 @@ export default function TrendingView() {
                 colorClass: 'stat-blue'
               },
               { 
-                label: 'This Month', 
+                label: 'За месяц', 
                 value: formatNumber(stats.monthlyDownloads),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +149,7 @@ export default function TrendingView() {
                 colorClass: 'stat-purple'
               },
               { 
-                label: 'This Week', 
+                label: 'За неделю', 
                 value: formatNumber(stats.weeklyDownloads),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,7 +159,7 @@ export default function TrendingView() {
                 colorClass: 'stat-emerald'
               },
               { 
-                label: 'Today', 
+                label: 'Сегодня', 
                 value: formatNumber(stats.todayDownloads),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,7 +169,7 @@ export default function TrendingView() {
                 colorClass: 'stat-orange'
               },
               { 
-                label: 'Components', 
+                label: 'Компоненты', 
                 value: formatNumber(stats.totalComponents),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +179,7 @@ export default function TrendingView() {
                 colorClass: 'stat-pink'
               },
               { 
-                label: 'Countries', 
+                label: 'Страны', 
                 value: String(stats.totalCountries),
                 icon: (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -208,7 +209,7 @@ export default function TrendingView() {
       {/* View tabs */}
       <div className="px-6 pb-5">
         <div role="tablist" className="inline-flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)]">
-          {([['components', 'Components'], ['agents', 'Agents vs humans']] as const).map(([key, label]) => (
+          {([['components', 'Компоненты'], ['agents', 'Агенты и люди']] as const).map(([key, label]) => (
             <button
               key={key}
               role="tab"
@@ -237,7 +238,7 @@ export default function TrendingView() {
             <svg className="w-4 h-4 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-[12px] text-[var(--color-text-secondary)] font-semibold uppercase tracking-wider">Top Countries</span>
+            <span className="text-[12px] text-[var(--color-text-secondary)] font-semibold uppercase tracking-wider">Топ стран</span>
           </div>
           <div className="flex items-center gap-3 overflow-x-auto pb-1">
             {data.topCountries.map((c, idx) => (
@@ -253,7 +254,7 @@ export default function TrendingView() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[12px] text-[var(--color-text-primary)] font-medium">{c.name}</span>
-                  <span className="text-[10px] text-[var(--color-text-tertiary)] tabular-nums">{formatNumber(c.downloads)} downloads</span>
+                  <span className="text-[10px] text-[var(--color-text-tertiary)] tabular-nums">{formatNumber(c.downloads)} {plural(c.downloads, ['загрузка', 'загрузки', 'загрузок'])}</span>
                 </div>
                 <span className="text-[11px] text-[var(--color-accent)] font-semibold tabular-nums ml-1">{c.percentage}%</span>
               </div>
@@ -287,7 +288,7 @@ export default function TrendingView() {
                       <TypeIcon type={type} size={14} />
                     </div>
                   )}
-                  {type === 'all' ? 'All' : TYPE_CONFIG[type]?.label ?? type}
+                  {type === 'all' ? 'Все' : TYPE_LABELS_RU[type] ?? TYPE_CONFIG[type]?.label ?? type}
                 </button>
               );
             })}
@@ -303,9 +304,9 @@ export default function TrendingView() {
               onChange={(e) => setPeriod(e.target.value as any)}
               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] text-[var(--color-text-primary)] font-medium px-3 py-1.5 outline-none cursor-pointer hover:border-[var(--color-accent)]/30 transition-colors"
             >
-              <option value="downloadsWeek">This Week</option>
-              <option value="downloadsMonth">This Month</option>
-              <option value="downloadsTotal">All Time</option>
+              <option value="downloadsWeek">За неделю</option>
+              <option value="downloadsMonth">За месяц</option>
+              <option value="downloadsTotal">За всё время</option>
             </select>
           </div>
         </div>
@@ -316,7 +317,7 @@ export default function TrendingView() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <span className="text-[11px] text-[var(--color-text-tertiary)] font-medium">
-            {items.length} trending component{items.length !== 1 ? 's' : ''}
+            {items.length} {plural(items.length, ['компонент', 'компонента', 'компонентов'])} в тренде
           </span>
         </div>
       </div>
@@ -330,32 +331,32 @@ export default function TrendingView() {
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
               </svg>
-              Rank
+              Место
             </div>
-            <span className="text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">Component</span>
+            <span className="text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">Компонент</span>
             <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Today
+              Сегодня
             </div>
             <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Week
+              Неделя
             </div>
             <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Month
+              Месяц
             </div>
             <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              Total
+              Всего
             </div>
           </div>
 
@@ -408,7 +409,7 @@ export default function TrendingView() {
                             <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                             </svg>
-                            Hot
+                            Хит
                           </span>
                         )}
                       </div>
@@ -443,25 +444,25 @@ export default function TrendingView() {
                   {/* Stats - Mobile */}
                   <div className="md:hidden col-span-full grid grid-cols-4 gap-2 mt-2 pt-2 border-t border-[var(--color-border)]">
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Today</div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Сегодня</div>
                       <div className={`text-[12px] font-semibold tabular-nums ${item.downloadsToday > 0 ? 'stat-today-active' : 'text-[var(--color-text-tertiary)]'}`}>
                         {item.downloadsToday > 0 ? `+${item.downloadsToday}` : '—'}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Week</div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Неделя</div>
                       <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">
                         {formatNumber(item.downloadsWeek)}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Month</div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Месяц</div>
                       <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">
                         {formatNumber(item.downloadsMonth)}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Total</div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Всего</div>
                       <div className="text-[12px] font-bold tabular-nums text-[var(--color-text-primary)]">
                         {formatNumber(item.downloadsTotal)}
                       </div>
@@ -484,7 +485,7 @@ export default function TrendingView() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>
-            Last updated: {new Date(data.lastUpdated.replace(/\+00:00Z$/, 'Z')).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            Обновлено: {new Date(data.lastUpdated.replace(/\+00:00Z$/, 'Z')).toLocaleDateString('ru-RU', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
       </div>

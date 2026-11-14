@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
 import { sanitizeHtml, codeLang, demoteH1, type DocBase } from '../lib/sanitize-html';
+import { pluralize } from '../lib/ru';
 
 interface Heading {
   level: number;
@@ -280,7 +281,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                 </svg>
-                Code
+                Код
               </button>
               <button
                 onClick={() => setMode('preview')}
@@ -294,7 +295,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                Preview
+                Предпросмотр
               </button>
             </div>
 
@@ -309,12 +310,12 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                   ? 'bg-accent-500/15 text-accent-400'
                   : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-white/[0.04]'
               }`}
-              title="Search in document (Cmd+F)"
+              title="Поиск по документу (Cmd+F)"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">Поиск</span>
               <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono ml-1">
                 {navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}F
               </kbd>
@@ -325,7 +326,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
             onClick={handleCopy}
             className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
           >
-            Copy
+            Копировать
           </button>
         </div>
 
@@ -342,18 +343,19 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search sections and content..."
+                placeholder="Поиск по разделам и тексту..."
                 className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg pl-9 pr-20 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans"
                 autoFocus
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 {searchQuery.length >= 2 && (
                   <span className="text-[10px] text-[var(--color-text-tertiary)]">
-                    {highlightCount > 0 ? `${highlightCount} match${highlightCount !== 1 ? 'es' : ''}` : 'No matches'}
+                    {highlightCount > 0 ? pluralize(highlightCount, ['совпадение', 'совпадения', 'совпадений']) : 'Нет совпадений'}
                   </span>
                 )}
                 <button
                   onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                  aria-label="Закрыть поиск"
                   className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -421,7 +423,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                 expanded ? '' : 'max-h-[32rem]'
               }`}
             >
-              {content || 'No content available'}
+              {content || 'Содержимое недоступно'}
             </div>
           ) : (
             <div
@@ -442,7 +444,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
-                Show full {mode === 'preview' ? 'document' : 'source'}
+                {mode === 'preview' ? 'Показать документ целиком' : 'Показать исходник целиком'}
               </button>
             </div>
           )}
@@ -456,7 +458,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
                 <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
-                Collapse
+                Свернуть
               </button>
             </div>
           )}
@@ -468,7 +470,7 @@ export default function MarkdownViewer({ content, headings, docBase }: MarkdownV
         <nav className="hidden xl:block w-56 shrink-0 ml-6">
           <div className="sticky top-28">
             <h4 className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-3 px-3">
-              On this page
+              На этой странице
             </h4>
             <ul className="space-y-1 text-[12px] border-l-2 border-[var(--color-border)] max-h-[calc(100vh-12rem)] overflow-y-auto">
               {headings.map((h) => (

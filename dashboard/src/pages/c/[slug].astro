@@ -3,6 +3,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro';
 import TopBar from '../../components/TopBar.astro';
 import SearchModal from '../../components/SearchModal.tsx';
 import { getNeonClient } from '../../lib/api/neon';
+import { plural, TYPE_LABELS_RU } from '../../lib/ru';
 
 export const prerender = false;
 
@@ -14,7 +15,7 @@ const sql = getNeonClient();
 
 let collection: any = null;
 let items: any[] = [];
-let authorName = 'user';
+let authorName = 'пользователь';
 
 try {
   const collections = await sql`
@@ -41,7 +42,7 @@ try {
     if (clerkSecret) {
       const clerk = createClerkClient({ secretKey: clerkSecret });
       const user = await clerk.users.getUser(collection.clerk_user_id);
-      authorName = user.username || user.firstName || 'user';
+      authorName = user.username || user.firstName || 'пользователь';
     }
   } catch {}
 } catch (e) {
@@ -110,11 +111,12 @@ function groupByType(collItems: any[]): { type: string; color: string; items: an
 const installCmd = generateCommand(items);
 const groups = groupByType(items);
 const totalComponents = items.length;
+const COMPONENT_FORMS: [string, string, string] = ['компонент', 'компонента', 'компонентов'];
 ---
 
 <DashboardLayout
-  title={`${collection.name} — Shared Collection | Claude Code Templates`}
-  description={`${authorName}'s "${collection.name}" collection with ${totalComponents} Claude Code components. Install with one command.`}
+  title={`${collection.name} — коллекция | Claude Code Templates`}
+  description={`Коллекция «${collection.name}» от ${authorName}: ${totalComponents} ${plural(totalComponents, COMPONENT_FORMS)} для Claude Code. Установка одной командой.`}
 >
   <TopBar />
 
@@ -138,23 +140,23 @@ const totalComponents = items.length;
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <span class="text-[13px] text-[var(--color-text-tertiary)]">
-              Shared by <span class="text-[var(--color-text-secondary)] font-medium">{authorName}</span>
+              Поделился <span class="text-[var(--color-text-secondary)] font-medium">{authorName}</span>
             </span>
           </div>
-          <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Component Collection</p>
+          <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Коллекция компонентов</p>
           <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight mb-2">
             {collection.name}
           </h1>
           <div class="flex items-center gap-3 flex-wrap">
             <span class="text-[13px] text-[var(--color-text-tertiary)]">
-              {totalComponents} {totalComponents === 1 ? 'component' : 'components'}
+              {totalComponents} {plural(totalComponents, COMPONENT_FORMS)}
             </span>
             {groups.map(g => (
               <span
                 class="text-[10px] font-semibold px-2.5 py-1 rounded-full border"
                 style={`background: ${g.color}12; color: ${g.color}; border-color: ${g.color}25;`}
               >
-                {g.items.length} {g.type}
+                {TYPE_LABELS_RU[g.type] ?? g.type}: {g.items.length}
               </span>
             ))}
           </div>
@@ -168,7 +170,7 @@ const totalComponents = items.length;
 
     <!-- Install Command -->
     <div>
-      <h2 class="text-sm font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3">Install all components</h2>
+      <h2 class="text-sm font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3">Установить все компоненты</h2>
       <div class="relative group">
         <pre
           id="installCmd"
@@ -180,7 +182,7 @@ const totalComponents = items.length;
           class="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 opacity-0 group-hover:opacity-100"
           style="background: var(--color-surface-3); color: var(--color-text-secondary); border: 1px solid var(--color-border);"
         >
-          Copy
+          Копировать
         </button>
       </div>
     </div>
@@ -195,7 +197,7 @@ const totalComponents = items.length;
           >
             <span class="w-3 h-3 rounded-full" style={`background: ${group.color};`}></span>
           </span>
-          <h2 class="text-base font-bold text-[var(--color-text-primary)] capitalize">{group.type}</h2>
+          <h2 class="text-base font-bold text-[var(--color-text-primary)] capitalize">{TYPE_LABELS_RU[group.type] ?? group.type}</h2>
           <span class="text-[12px] text-[var(--color-text-tertiary)]">({group.items.length})</span>
         </div>
 
@@ -231,10 +233,10 @@ const totalComponents = items.length;
       <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl"></div>
       <div class="relative z-10">
         <h3 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">
-          Create your own collections
+          Создайте свои коллекции
         </h3>
         <p class="text-[14px] text-[var(--color-text-secondary)] mb-5 max-w-md mx-auto">
-          Sign up for free to create, organize, and share your favorite Claude Code components with your team.
+          Зарегистрируйтесь бесплатно, чтобы собирать любимые компоненты Claude Code в коллекции и делиться ими с командой.
         </p>
         <a
           href="/my-components"
@@ -244,7 +246,7 @@ const totalComponents = items.length;
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Start Building Collections
+          Создать коллекцию
         </a>
       </div>
     </div>
@@ -253,7 +255,7 @@ const totalComponents = items.length;
     <div>
       <a href="/" class="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors no-underline">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Browse all components
+        Все компоненты
       </a>
     </div>
   </div>
@@ -280,8 +282,8 @@ const totalComponents = items.length;
         const cmd = document.getElementById('installCmd')?.textContent?.replace(/^\$\s*/, '') ?? '';
         navigator.clipboard.writeText(cmd);
         track('copy_stack_command', { item_count: Number(copyBtn.dataset.itemCount) || 0, source: 'collection' });
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+        copyBtn.textContent = 'Скопировано!';
+        setTimeout(() => { copyBtn.textContent = 'Копировать'; }, 2000);
       });
     }
   </script>

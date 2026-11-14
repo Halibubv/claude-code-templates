@@ -55,12 +55,12 @@ async function run(clerk: any, action: PendingAction): Promise<void> {
       return;
     }
     showToast({
-      message: status === 'already' ? `${action.name} is already in "${collection.name}".` : `Saved ${action.name} to "${collection.name}".`,
-      action: { label: 'My components', href: myComponentsUrl(collection.id) },
+      message: status === 'already' ? `${action.name} уже есть в коллекции «${collection.name}».` : `Сохранили ${action.name} в коллекцию «${collection.name}».`,
+      action: { label: 'Мои компоненты', href: myComponentsUrl(collection.id) },
     });
   } catch (err) {
     console.error('Failed to resume save after sign-in:', err);
-    showToast({ message: `Couldn't save ${action.name}. Click Save again to retry.` });
+    showToast({ message: `Не удалось сохранить ${action.name}. Нажмите «Сохранить» ещё раз.` });
   }
 }
 
@@ -74,7 +74,7 @@ async function saveStack(clerk: any, code: string): Promise<void> {
     window.location.assign(myComponentsUrl(collection.id));
   } catch (err) {
     console.error('Failed to resume saving the stack after sign-in:', err);
-    showToast({ message: "Couldn't save your stack. Open it and click Save as collection again." });
+    showToast({ message: 'Не удалось сохранить стек. Откройте его и снова нажмите «Сохранить как коллекцию».' });
   }
 }
 
@@ -93,10 +93,10 @@ function openLink(action: Extract<PendingAction, { kind: 'open-link' }>): void {
     opened = null;
   }
   if (opened) return;
-  const what = action.source === 'job' ? 'job' : 'course';
+  const what = action.source === 'job' ? 'вакансию' : 'курс';
   showToast({
-    message: `You're signed in. ${action.title}`,
-    action: { label: `Open ${what}`, href: action.url, external: true },
+    message: `Вы вошли. ${action.title}`,
+    action: { label: `Открыть ${what}`, href: action.url, external: true },
     duration: 0,
   });
 }

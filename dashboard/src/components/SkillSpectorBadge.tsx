@@ -31,11 +31,11 @@ export default function SkillSpectorBadge({ result, size = 'sm', href }: Props) 
   const body = (
     <>
       <ShieldCheckIcon className={`${md ? 'w-3.5 h-3.5' : 'w-3 h-3'} text-[var(--color-accent)] shrink-0`} />
-      Scanned by NVIDIA SkillSpector
+      Проверено NVIDIA SkillSpector
     </>
   );
-  const title = `Scanned by NVIDIA SkillSpector${result.version ? ` v${result.version}` : ''}${
-    result.scannedAt ? ` on ${result.scannedAt.slice(0, 10)}` : ''
+  const title = `Проверено NVIDIA SkillSpector${result.version ? ` v${result.version}` : ''}${
+    result.scannedAt ? ` ${result.scannedAt.slice(0, 10)}` : ''
   }`;
   return href ? (
     <a href={href} className={className} title={title}>{body}</a>

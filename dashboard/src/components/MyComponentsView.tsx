@@ -6,6 +6,7 @@ import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
 import { componentPath } from '../lib/component-url';
 import { openSignIn } from '../lib/sign-in';
+import { plural, TYPE_LABELS_RU } from '../lib/ru';
 
 // ── Auth hook ────────────────────────────────────────────────────────────
 function useGlobalAuth() {
@@ -68,7 +69,7 @@ function groupByType(items: CollectionItem[]): { type: string; label: string; co
     .filter((t) => map[t]?.length)
     .map((t) => ({
       type: t,
-      label: TYPE_CONFIG[t]?.label ?? t,
+      label: TYPE_LABELS_RU[t] ?? TYPE_CONFIG[t]?.label ?? t,
       color: TYPE_CONFIG[t]?.color ?? 'var(--color-text-tertiary)',
       items: map[t],
     }));
@@ -286,7 +287,7 @@ function ProjectTreeNode({
         <button
           onClick={(e) => { e.stopPropagation(); onRemoveItem(node.item!, collectionId); }}
           className="p-0.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/treeitem:opacity-100 shrink-0 mr-1"
-          title="Remove"
+          title="Удалить"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -409,7 +410,7 @@ function MainContentTree({
             <button
               onClick={() => onRemoveItem(node.item!, collectionId)}
               className="ml-2 p-0.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/treeline:opacity-100 shrink-0"
-              title="Remove"
+              title="Удалить"
             >
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -453,11 +454,11 @@ function CollectionContextMenu({
     <div ref={ref} className="absolute right-0 top-full mt-1 w-36 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 py-1">
       <button onClick={onRename} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06]">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-        Rename
+        Переименовать
       </button>
       <button onClick={onDelete} className="flex items-center gap-2 w-full px-3 py-1.5 text-[12px] text-red-400 hover:text-red-300 hover:bg-white/[0.06] transition-colors">
         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-        Delete
+        Удалить
       </button>
     </div>
   );
@@ -542,7 +543,7 @@ export default function MyComponentsView() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this collection and all its items?')) return;
+    if (!confirm('Удалить коллекцию вместе со всем содержимым?')) return;
     const token = await getToken();
     if (!token) return;
     try {
@@ -641,15 +642,15 @@ export default function MyComponentsView() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
         </div>
-        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Save your favorite components</h2>
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Сохраняйте любимые компоненты</h2>
         <p className="text-sm text-[var(--color-text-tertiary)] mb-6 max-w-sm">
-          Sign in to create collections and organize the components you use most.
+          Войдите, чтобы создавать коллекции и держать под рукой компоненты, которыми пользуетесь чаще всего.
         </p>
         <button
           onClick={() => openSignIn('collection')}
           className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
         >
-          Sign In
+          Войти
         </button>
       </div>
     );
@@ -681,7 +682,7 @@ export default function MyComponentsView() {
       {/* ── Sidebar ── */}
       <div className="w-60 border-r border-[var(--color-border)] flex flex-col shrink-0">
         <div className="px-4 py-3 border-b border-[var(--color-border)]">
-          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">My Components</h2>
+          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Мои компоненты</h2>
         </div>
 
         {/* Create new — top */}
@@ -691,13 +692,15 @@ export default function MyComponentsView() {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
-              placeholder="New collection..."
+              placeholder="Новая коллекция..."
               className="flex-1 bg-transparent border-none text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-2 py-1.5 outline-none"
               maxLength={100}
             />
             <button
               onClick={handleCreate}
               disabled={!newName.trim() || creating}
+              title="Создать коллекцию"
+              aria-label="Создать коллекцию"
               className="p-1.5 rounded hover:bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] disabled:opacity-30 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -766,6 +769,8 @@ export default function MyComponentsView() {
                     </span>
                     <button
                       onClick={(e) => { e.stopPropagation(); setContextMenu(contextMenu === col.id ? null : col.id); }}
+                      title="Действия"
+                      aria-label="Действия с коллекцией"
                       className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-white/10 transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -813,7 +818,7 @@ export default function MyComponentsView() {
       <div className="flex-1 overflow-y-auto">
         {!selectedCollection ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
-            <p className="text-sm text-[var(--color-text-tertiary)]">Select a collection</p>
+            <p className="text-sm text-[var(--color-text-tertiary)]">Выберите коллекцию</p>
           </div>
         ) : selectedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
@@ -823,16 +828,16 @@ export default function MyComponentsView() {
               </svg>
             </div>
             <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)] mb-2">
-              Collection is empty
+              Коллекция пуста
             </h3>
             <p className="text-[13px] text-[var(--color-text-secondary)] max-w-md leading-relaxed mb-6">
-              "{selectedCollection.name}" doesn't have any components yet. Browse the marketplace and click the bookmark icon to save components here.
+              В «{selectedCollection.name}» пока нет компонентов. Откройте каталог и нажмите на значок закладки, чтобы сохранить компонент сюда.
             </p>
             <a
               href="/agents"
               className="px-4 py-2 bg-[var(--color-primary-500)] hover:bg-[var(--color-primary-600)] rounded-lg text-[13px] font-medium text-white transition-all"
             >
-              Browse Components
+              Открыть каталог
             </a>
           </div>
         ) : (
@@ -842,7 +847,7 @@ export default function MyComponentsView() {
               <div>
                 <h3 className="text-base font-semibold text-[var(--color-text-primary)]">{selectedCollection.name}</h3>
                 <span className="text-[12px] text-[var(--color-text-tertiary)]">
-                  {selectedItems.length} component{selectedItems.length !== 1 ? 's' : ''}
+                  {selectedItems.length} {plural(selectedItems.length, ['компонент', 'компонента', 'компонентов'])}
                 </span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -854,7 +859,7 @@ export default function MyComponentsView() {
                       ? 'bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20'
                       : 'bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] border-[var(--color-border)]'
                   }`}
-                  title={(selectedCollection as any)?.is_public ? 'Click to copy link or disable sharing' : 'Share this collection publicly'}
+                  title={(selectedCollection as any)?.is_public ? 'Открыть ссылку на коллекцию' : 'Открыть доступ к коллекции по ссылке'}
                 >
                   {shareLoading ? (
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
@@ -863,18 +868,18 @@ export default function MyComponentsView() {
                   ) : (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                   )}
-                  {shareCopied ? 'Link Copied!' : (selectedCollection as any)?.is_public ? 'Shared' : 'Share'}
+                  {shareCopied ? 'Ссылка скопирована!' : (selectedCollection as any)?.is_public ? 'Доступ открыт' : 'Поделиться'}
                 </button>
                 {canSendToRepo && (
                   <button
                     onClick={() => setShowSendToRepo(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] border border-[var(--color-border)] rounded-lg text-[13px] font-medium transition-colors"
-                    title="Create a Pull Request with these components"
+                    title="Создать pull request с этими компонентами"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                     </svg>
-                    Send to Repo
+                    Отправить в репозиторий
                   </button>
                 )}
                 <button
@@ -884,12 +889,12 @@ export default function MyComponentsView() {
                   {copied ? (
                     <>
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                      Copied!
+                      Скопировано!
                     </>
                   ) : (
                     <>
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></svg>
-                      Install All
+                      Установить все
                     </>
                   )}
                 </button>
@@ -910,8 +915,8 @@ export default function MyComponentsView() {
                 <svg className="w-4 h-4 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2 17V7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
                 </svg>
-                <h4 className="text-[13px] font-medium text-[var(--color-text-secondary)]">Project Structure</h4>
-                <span className="text-[10px] text-[var(--color-text-tertiary)]">How components will be installed</span>
+                <h4 className="text-[13px] font-medium text-[var(--color-text-secondary)]">Структура проекта</h4>
+                <span className="text-[10px] text-[var(--color-text-tertiary)]">Куда установятся компоненты</span>
               </div>
               <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-4 font-mono text-[12px]">
                 {(() => {
@@ -982,7 +987,7 @@ export default function MyComponentsView() {
                           <button
                             onClick={() => handleRemoveItem(item, selectedCollection!.id)}
                             className="p-1.5 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-red-400 transition-colors opacity-0 group-hover/card:opacity-100 shrink-0"
-                            title="Remove"
+                            title="Удалить"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1021,6 +1026,8 @@ export default function MyComponentsView() {
             {/* Close */}
             <button
               onClick={() => setShowShareModal(false)}
+              aria-label="Закрыть"
+              title="Закрыть"
               className="absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
@@ -1033,14 +1040,14 @@ export default function MyComponentsView() {
                 <svg className="w-5 h-5" style={{ color: '#60a5fa' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
               </div>
               <div>
-                <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Share Collection</h3>
+                <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Поделиться коллекцией</h3>
                 <p className="text-[12px]" style={{ color: 'var(--color-text-tertiary)' }}>{selectedCollection?.name}</p>
               </div>
             </div>
 
             {/* Link */}
             <div className="mb-4">
-              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Public link</label>
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Публичная ссылка</label>
               <div className="flex items-center gap-2">
                 <input
                   readOnly
@@ -1062,34 +1069,34 @@ export default function MyComponentsView() {
                     border: `1px solid ${shareCopied ? 'rgba(34,197,94,0.3)' : 'var(--color-border)'}`,
                   }}
                 >
-                  {shareCopied ? 'Copied!' : 'Copy'}
+                  {shareCopied ? 'Скопировано!' : 'Копировать'}
                 </button>
               </div>
             </div>
 
             {/* Share on socials */}
             <div>
-              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Share on</label>
+              <label className="text-[11px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-tertiary)' }}>Поделиться в соцсетях</label>
               <div className="flex items-center gap-2">
                 <a
-                  href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection!`)}&url=${encodeURIComponent(shareUrl)}`}
+                  href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Моя коллекция для Claude Code «${selectedCollection?.name}»`)}&url=${encodeURIComponent(shareUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
                   style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  Post on X
+                  Опубликовать в X
                 </a>
                 <a
-                  href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Check out my "${selectedCollection?.name}" Claude Code collection! ${shareUrl}`)}`}
+                  href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Моя коллекция для Claude Code «${selectedCollection?.name}» ${shareUrl}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all hover:scale-[1.02] no-underline"
                   style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.59 12c.025 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.96-.065-1.187.408-2.26 1.33-3.02.86-.706 2.035-1.107 3.402-1.162 1.163-.047 2.21.1 3.127.436-.055-.79-.271-1.418-.644-1.88-.478-.593-1.223-.896-2.216-.902h-.04c-.78.003-1.81.27-2.2.992l-1.76-.978C8.737 6.074 10.17 5.47 11.87 5.46h.06c1.49.009 2.686.505 3.535 1.46.745.836 1.2 1.964 1.352 3.353.58.226 1.1.507 1.553.84 1.118.82 1.927 1.907 2.372 3.166.775 2.19.592 4.9-1.346 6.797-1.83 1.793-4.093 2.588-7.218 2.612l.012.012zm-1.677-7.87c-.746.04-1.5.186-1.91.476-.38.27-.533.642-.51 1.065.04.703.57 1.39 1.88 1.39h.14c1.44-.072 2.406-1.16 2.72-3.076-.73-.263-1.535-.396-2.32-.355z"/></svg>
-                  Post on Threads
+                  Опубликовать в Threads
                 </a>
               </div>
             </div>

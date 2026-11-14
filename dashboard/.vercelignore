@@ -1,2 +1,3 @@
-public/components.json
-public/trending-data.json
+# Русская версия: components.json и trending-data.json нужны сайту на Vercel,
+# поэтому из исключений они убраны.
+node_modules

@@ -11,6 +11,7 @@ import nodePath from 'node:path';
 import { AITMPL_MARKETPLACE } from '../../lib/constants';
 import type { Component } from '../../lib/types';
 import { pluginContentsSummary } from '../../lib/component-page';
+import { plural } from '../../lib/ru';
 
 // Load plugins data at build time from filesystem
 const filePath = nodePath.join(process.cwd(), 'public', 'plugins.json');
@@ -32,8 +33,8 @@ try {
 ---
 
 <DashboardLayout
-  title="Claude Code Plugins & Marketplaces — Discover the Best Collections"
-  description="Discover the most popular Claude Code plugin marketplaces, skill collections, and component registries on GitHub. Browse 20+ curated repositories."
+  title="Плагины и маркетплейсы Claude Code — лучшие коллекции"
+  description="Популярные маркетплейсы плагинов Claude Code, коллекции скиллов и реестры компонентов на GitHub. Более 20 отобранных репозиториев."
 >
   <TopBar />
 
@@ -58,16 +59,16 @@ try {
 
         <div class="flex-1">
           <h1 class="text-3xl font-bold text-[var(--color-text-primary)] mb-2 tracking-tight">
-            Plugins & Marketplaces
+            Плагины и маркетплейсы
           </h1>
           <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
-            Discover the most popular Claude Code plugin collections, skill registries, and component marketplaces on GitHub
+            Популярные коллекции плагинов Claude Code, реестры скиллов и маркетплейсы компонентов на GitHub
           </p>
         </div>
 
         <div class="hidden md:flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)]">
           <span class="px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] border border-[var(--color-border)]">
-            {plugins.length} collections
+            {plugins.length} {plural(plugins.length, ['коллекция', 'коллекции', 'коллекций'])}
           </span>
         </div>
       </div>
@@ -78,9 +79,9 @@ try {
     <section aria-labelledby="aitmpl-marketplace-h" class="px-6 pt-8 max-w-7xl mx-auto">
       <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
         <div>
-          <h2 id="aitmpl-marketplace-h" class="text-[17px] font-semibold text-[var(--color-text-primary)]">The aitmpl marketplace</h2>
+          <h2 id="aitmpl-marketplace-h" class="text-[17px] font-semibold text-[var(--color-text-primary)]">Маркетплейс aitmpl</h2>
           <p class="text-[13.5px] text-[var(--color-text-secondary)] max-w-2xl">
-            Plugins reviewed and scanned for this catalog, each pinned to that commit. Claude Code installs them with its own plugin system, so <code>/plugin</code> shows, updates and removes them.
+            Плагины, которые проверены для этого каталога и закреплены за проверенным коммитом. Claude Code ставит их своей системой плагинов, так что <code>/plugin</code> показывает, обновляет и удаляет их.
           </p>
         </div>
         <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}`}</pre>
@@ -100,7 +101,7 @@ try {
           </li>
         ))}
       </ul>
-      <h2 class="mt-10 text-[17px] font-semibold text-[var(--color-text-primary)]">Other marketplaces and collections</h2>
+      <h2 class="mt-10 text-[17px] font-semibold text-[var(--color-text-primary)]">Другие маркетплейсы и коллекции</h2>
     </section>
   )}
 

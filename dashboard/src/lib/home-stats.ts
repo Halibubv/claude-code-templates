@@ -63,30 +63,30 @@ const DAY_MS = 86_400_000;
 export const HOME_STATS: HomeStat[] = [
   {
     key: 'downloads',
-    label: 'Downloads',
+    label: 'Загрузки',
     base: 1340064,
     baseAt: TRENDING_MEASURED_AT,
     perDay: 3300,
     href: '/trending',
-    title: 'Components installed through the CLI, all time',
+    title: 'Установки компонентов через CLI за всё время',
   },
   {
     key: 'componentPrs',
-    label: 'Component PRs',
+    label: 'PR с компонентами',
     base: 270,
     baseAt: MEASURED_AT,
     perDay: 1.8,
     href: 'https://github.com/davila7/claude-code-templates/pulls?q=is%3Apr+is%3Amerged',
-    title: 'Merged pull requests that added or improved a component',
+    title: 'Принятые pull request’ы, которые добавили или улучшили компонент',
   },
   {
     key: 'npmInstalls',
-    label: 'npm Installs',
+    label: 'Установки из npm',
     base: 239282,
     baseAt: MEASURED_AT,
     perDay: 466,
     href: 'https://www.npmjs.com/package/claude-code-templates',
-    title: 'Installs of the claude-code-templates package on npm',
+    title: 'Установки пакета claude-code-templates из npm',
   },
 ];
 

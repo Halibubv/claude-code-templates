@@ -63,7 +63,7 @@ export default function AddToStackButton({ typePlural, name, path, category, des
       <svg className={`w-4 h-4 ${inStack ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-secondary)]'}`} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
         {inStack ? <path d="m3.5 8.5 3 3 6-7" /> : <path d="M8 3v10M3 8h10" />}
       </svg>
-      {inStack ? 'In stack' : 'Add to stack'}
+      {inStack ? 'В стеке' : 'Добавить в стек'}
     </button>
   );
 }

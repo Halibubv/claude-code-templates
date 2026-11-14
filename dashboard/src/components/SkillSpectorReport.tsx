@@ -1,5 +1,8 @@
 import type { SkillSpectorResult } from '../lib/types';
 import { ShieldCheckIcon } from './SkillSpectorBadge';
+import { plural } from '../lib/ru';
+
+const OBSERVATION_FORMS: [string, string, string] = ['замечание', 'замечания', 'замечаний'];
 
 // SkillSpector report on the component page. Informative, not alarming:
 // neutral colors, no severity labels or install verdicts. Rendered on the
@@ -23,15 +26,15 @@ export default function SkillSpectorReport({ result }: Props) {
             <ShieldCheckIcon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Scanned by NVIDIA SkillSpector</h3>
+            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Проверено NVIDIA SkillSpector</h3>
             <p className="mt-1 text-[12px] text-[var(--color-text-tertiary)]">
-              Automated static analysis (no LLM)
+              Автоматический статический анализ (без LLM)
               {result.version ? ` · v${result.version}` : ''}
               {result.scannedAt ? ` · ${result.scannedAt.slice(0, 10)}` : ''}
             </p>
             {result.analysis === 'partial' && (
               <p className="mt-1 text-[12px] text-[var(--color-text-tertiary)]">
-                Partial analysis: some checks could not run on this component.
+                Частичный анализ: часть проверок не удалось запустить для этого компонента.
               </p>
             )}
           </div>
@@ -39,17 +42,17 @@ export default function SkillSpectorReport({ result }: Props) {
         <div className="sm:text-right">
           <div className="font-mono text-[13px] text-[var(--color-text-secondary)]">
             <span className="text-[var(--color-text-primary)] font-semibold">{result.issueCount}</span>{' '}
-            {result.issueCount === 1 ? 'observation' : 'observations'}
+            {plural(result.issueCount, OBSERVATION_FORMS)}
           </div>
-          <div className="mt-0.5 font-mono text-[11px] text-[var(--color-text-tertiary)]">scanner score {result.score}/100</div>
+          <div className="mt-0.5 font-mono text-[11px] text-[var(--color-text-tertiary)]">оценка сканера {result.score}/100</div>
         </div>
       </div>
 
       <p className="mt-4 text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
-        SkillSpector looks for patterns such as shell commands, credential access, network calls or unpinned
-        dependencies. An observation is something worth reading in the files before you install, not a
-        confirmed vulnerability. Components that run code locally, like hooks, MCP servers and security tooling,
-        naturally show more of them.
+        SkillSpector ищет характерные шаблоны: команды оболочки, доступ к учётным данным, сетевые запросы,
+        незакреплённые версии зависимостей. Замечание — это место в файлах, которое стоит прочитать перед
+        установкой, а не подтверждённая уязвимость. У компонентов, которые запускают код локально (хуки,
+        MCP-серверы, инструменты безопасности), замечаний естественно больше.
       </p>
 
       {result.findings.length > 0 ? (
@@ -70,12 +73,12 @@ export default function SkillSpectorReport({ result }: Props) {
           ))}
         </ul>
       ) : (
-        <p className="mt-5 text-[13px] text-[var(--color-text-secondary)]">No observations.</p>
+        <p className="mt-5 text-[13px] text-[var(--color-text-secondary)]">Замечаний нет.</p>
       )}
 
       <p className="mt-4 text-[11px] text-[var(--color-text-tertiary)]">
-        {result.issueCount > shown ? `Showing ${shown} of ${result.issueCount} observations. ` : ''}
-        Learn more about{' '}
+        {result.issueCount > shown ? `Показано ${shown} из ${result.issueCount} ${plural(result.issueCount, ['замечания', 'замечаний', 'замечаний'])}. ` : ''}
+        Подробнее о{' '}
         <a
           href="https://github.com/NVIDIA/skillspector"
           target="_blank"
@@ -84,9 +87,9 @@ export default function SkillSpectorReport({ result }: Props) {
         >
           NVIDIA SkillSpector
         </a>
-        {' '}or{' '}
+        {' '}и о том,{' '}
         <a href="/security" className="underline hover:text-[var(--color-text-primary)]">
-          how components are reviewed
+          как проверяются компоненты
         </a>
         .
       </p>

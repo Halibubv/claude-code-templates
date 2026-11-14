@@ -32,6 +32,7 @@
     "xss": "1.0.17"
   },
   "devDependencies": {
+    "@astrojs/vercel": "^8.2.11",
     "@resvg/resvg-js": "^2.6.2",
     "geist": "^1.7.2",
     "satori": "^0.47.1"

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { pluralize } from '../lib/ru';
 
 interface JsonViewerProps {
   content: string;
@@ -24,7 +25,7 @@ export default function JsonViewer({ content }: JsonViewerProps) {
   if (parsed === null) {
     return (
       <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-6 text-sm text-red-400 font-mono whitespace-pre-wrap">
-        Invalid JSON
+        Некорректный JSON
         <pre className="mt-4 text-[var(--color-text-tertiary)]">{content}</pre>
       </div>
     );
@@ -38,7 +39,7 @@ export default function JsonViewer({ content }: JsonViewerProps) {
           onClick={handleCopy}
           className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
         >
-          Copy
+          Копировать
         </button>
       </div>
       <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg py-3 px-1 font-mono text-sm overflow-x-auto">
@@ -157,16 +158,16 @@ function JsonObject({
         <span className="text-[var(--color-text-tertiary)]">{'{'}</span>
         {!open && (
           <span className="text-[var(--color-text-tertiary)] text-xs ml-1">
-            {keys.length} key{keys.length !== 1 ? 's' : ''}
+            {pluralize(keys.length, ['ключ', 'ключа', 'ключей'])}
           </span>
         )}
         {!open && <span className="text-[var(--color-text-tertiary)]">{'}'}</span>}
         <button
           onClick={(e) => { e.stopPropagation(); handleCopySection(); }}
           className="ml-auto mr-2 opacity-0 group-hover/obj:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-all"
-          title="Copy this section"
+          title="Скопировать этот раздел"
         >
-          Copy
+          Копировать
         </button>
       </div>
       {open && (
@@ -230,16 +231,16 @@ function JsonArray({
         <span className="text-[var(--color-text-tertiary)]">{'['}</span>
         {!open && (
           <span className="text-[var(--color-text-tertiary)] text-xs ml-1">
-            {value.length} item{value.length !== 1 ? 's' : ''}
+            {pluralize(value.length, ['элемент', 'элемента', 'элементов'])}
           </span>
         )}
         {!open && <span className="text-[var(--color-text-tertiary)]">{']'}</span>}
         <button
           onClick={(e) => { e.stopPropagation(); handleCopySection(); }}
           className="ml-auto mr-2 opacity-0 group-hover/arr:opacity-100 text-[10px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-all"
-          title="Copy this section"
+          title="Скопировать этот раздел"
         >
-          Copy
+          Копировать
         </button>
       </div>
       {open && (

@@ -32,10 +32,10 @@ test('validateItem rejects non-https links', () => {
 
 test('formatPrice', () => {
   assert.equal(formatPrice({ amount: 99, currency: 'USD' }), '$99');
-  assert.equal(formatPrice(null), 'Free');
-  assert.equal(formatPrice({ amount: 0, currency: 'USD' }), 'Free');
+  assert.equal(formatPrice(null), 'Бесплатно');
+  assert.equal(formatPrice({ amount: 0, currency: 'USD' }), 'Бесплатно');
   assert.equal(formatPrice({ amount: 50, currency: 'EUR' }), 'EUR 50');
-  assert.equal(formatPrice(undefined), 'See price');
+  assert.equal(formatPrice(undefined), 'Цена на сайте');
 });
 
 test('sortItems puts Entry before Advanced for the same provider', () => {

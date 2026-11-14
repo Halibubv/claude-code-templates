@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import CompanyLogo from './CompanyLogo';
 import { openSignIn } from '../lib/sign-in';
+import { pluralize } from '../lib/ru';
 
 interface Job {
   id: string;
@@ -84,7 +85,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
     if (!isSignedIn) {
       e.preventDefault();
       const url = safeUrl(job.applyUrl);
-      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : 'job');
+      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} — ${job.company}`, url } : 'job');
     }
   }
 
@@ -95,7 +96,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
         <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface-0)] sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] font-bold text-[var(--color-text-primary)] uppercase tracking-wider">Jobs</span>
+              <span className="font-mono text-[11px] font-bold text-[var(--color-text-primary)] uppercase tracking-wider">Вакансии</span>
               <span className="font-mono text-[9px] font-medium bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/20">
                 {data.totalJobs}
               </span>
@@ -104,10 +105,10 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
               href="/jobs"
               className="font-mono text-[10px] text-[var(--color-text-tertiary)] hover:text-[var(--color-accent)] transition-colors"
             >
-              view all →
+              все →
             </a>
           </div>
-          <p className="font-mono text-[9px] text-[var(--color-text-tertiary)] mt-0.5">Using Claude Code</p>
+          <p className="font-mono text-[9px] text-[var(--color-text-tertiary)] mt-0.5">С Claude Code в работе</p>
         </div>
 
         {/* Vertical job list */}
@@ -124,7 +125,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
               {showAuthGate && (
                 <div className="absolute inset-0 bg-[var(--color-surface-0)]/80 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="font-mono text-[9px] font-medium text-[var(--color-text-secondary)] bg-[var(--color-surface-2)] px-2 py-1 rounded border border-[var(--color-border)]">
-                    Sign in to view
+                    Войдите, чтобы посмотреть
                   </span>
                 </div>
               )}
@@ -142,7 +143,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
                 <p className="font-mono text-[9px] text-[var(--color-text-tertiary)] truncate mb-1.5">{job.company}</p>
                 <div className="flex items-center gap-1 flex-wrap">
                   {job.remote && (
-                    <span className="text-[8px] font-medium bg-blue-500/15 text-blue-400 px-1 py-0.5 rounded border border-blue-500/20">Remote</span>
+                    <span className="text-[8px] font-medium bg-blue-500/15 text-blue-400 px-1 py-0.5 rounded border border-blue-500/20">Удалённо</span>
                   )}
                   {job.salary && (
                     <span className="text-[8px] font-medium bg-emerald-500/15 text-emerald-400 px-1 py-0.5 rounded border border-emerald-500/20">{job.salary}</span>
@@ -163,16 +164,16 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
     <section className="px-6 py-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Jobs Using Claude Code</h2>
+          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Вакансии с Claude Code</h2>
           <span className="text-[10px] font-medium bg-orange-500/15 text-orange-400 px-1.5 py-0.5 rounded">
-            {data.totalJobs} jobs
+            {pluralize(data.totalJobs, ['вакансия', 'вакансии', 'вакансий'])}
           </span>
         </div>
         <a
           href="/jobs"
           className="text-[12px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-colors"
         >
-          View all &rarr;
+          Все &rarr;
         </a>
       </div>
 
@@ -193,7 +194,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0110 0v4" />
                   </svg>
-                  Sign in to view
+                  Войдите, чтобы посмотреть
                 </div>
               </div>
             )}
@@ -212,7 +213,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
             <div className="flex items-center gap-1.5 flex-wrap">
               {job.remote && (
                 <span className="text-[9px] font-medium bg-blue-500/15 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
-                  Remote
+                  Удалённо
                 </span>
               )}
               {job.salary && (

@@ -45,7 +45,7 @@ export function NavContent({ isActive }: { isActive: boolean }) {
     return (
       <a
         href="/my-components"
-        data-tooltip="My Components"
+        data-tooltip="Мои компоненты"
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] transition-all duration-150 group ${
           isActive
             ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-medium shadow-sm'
@@ -55,7 +55,7 @@ export function NavContent({ isActive }: { isActive: boolean }) {
         <span className={`w-[18px] h-[18px] shrink-0 flex items-center justify-center transition-all duration-150 ${isActive ? 'text-[var(--color-text-primary)] scale-105' : 'text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] group-hover:scale-105'}`}>
           {icon}
         </span>
-        <span className="sidebar-text truncate transition-all duration-300">My Components</span>
+        <span className="sidebar-text truncate transition-all duration-300">Мои компоненты</span>
       </a>
     );
   }
@@ -63,13 +63,13 @@ export function NavContent({ isActive }: { isActive: boolean }) {
   return (
     <button
       onClick={() => openSignIn('sidebar')}
-      data-tooltip="My Components"
+      data-tooltip="Мои компоненты"
       className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-[var(--color-text-primary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm transition-all duration-150 group w-full text-left"
     >
       <span className="w-[18px] h-[18px] shrink-0 flex items-center justify-center text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-all duration-150 group-hover:scale-105">
         {icon}
       </span>
-      <span className="sidebar-text truncate transition-all duration-300">My Components</span>
+      <span className="sidebar-text truncate transition-all duration-300">Мои компоненты</span>
     </button>
   );
 }

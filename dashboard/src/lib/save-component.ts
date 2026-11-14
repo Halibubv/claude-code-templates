@@ -8,7 +8,7 @@ import type { Collection, CollectionItem } from './types';
 //   the caller then opens /my-components, which shows its install command.
 // - Otherwise: adds it to the first collection (the API lists them by position).
 
-export const FIRST_COLLECTION_NAME = 'My components';
+export const FIRST_COLLECTION_NAME = 'Мои компоненты';
 
 export interface SaveItem { type: string; path: string; name: string; category?: string }
 export type SaveStatus = 'first' | 'added' | 'already';

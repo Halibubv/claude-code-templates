@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
 import { sanitizeHtml, codeLang } from '../lib/sanitize-html';
+import { formatNumber } from '../lib/ru';
 
 // Lightweight token-count approximation: ~4 characters per token for English prose.
 // Avoids shipping the heavy gpt-tokenizer BPE table to the browser.
@@ -79,13 +80,13 @@ function buildSlides(content: string, skillName: string): Slide[] {
   desc = desc.replace(/<example>[\s\S]*?<\/example>/g, '').trim();
 
   const metaFields: Record<string, string> = {};
-  if (meta.version) metaFields['Version'] = meta.version;
-  if (meta.tools) metaFields['Tools'] = meta.tools;
-  if (meta['allowed-tools']) metaFields['Tools'] = meta['allowed-tools'];
-  if (meta.model) metaFields['Model'] = meta.model;
-  if (meta.color) metaFields['Color'] = meta.color;
-  if (meta.author) metaFields['Author'] = meta.author;
-  if (meta.license) metaFields['License'] = meta.license;
+  if (meta.version) metaFields['Версия'] = meta.version;
+  if (meta.tools) metaFields['Инструменты'] = meta.tools;
+  if (meta['allowed-tools']) metaFields['Инструменты'] = meta['allowed-tools'];
+  if (meta.model) metaFields['Модель'] = meta.model;
+  if (meta.color) metaFields['Цвет'] = meta.color;
+  if (meta.author) metaFields['Автор'] = meta.author;
+  if (meta.license) metaFields['Лицензия'] = meta.license;
 
   slides.push({
     type: 'title',
@@ -106,7 +107,7 @@ function buildSlides(content: string, skillName: string): Slide[] {
       if (section.trim().length > 50) {
         slides.push({
           type: 'content',
-          title: 'Introduction',
+          title: 'Введение',
           body: section.trim(),
           html: renderSlideMarkdown(section.trim()),
         });
@@ -129,7 +130,7 @@ function buildSlides(content: string, skillName: string): Slide[] {
   if (slides.length === 1 && bodyWithoutH1.trim()) {
     slides.push({
       type: 'content',
-      title: 'Content',
+      title: 'Содержание',
       body: bodyWithoutH1.trim(),
       html: renderSlideMarkdown(bodyWithoutH1.trim()),
     });
@@ -223,14 +224,14 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
                 </svg>
-                Collapse
+                Свернуть
               </>
             ) : (
               <>
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
-                Show full document
+                Показать документ целиком
               </>
             )}
           </button>
@@ -248,17 +249,17 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              Prev
+              Назад
             </button>
             <div className="hidden sm:flex items-center gap-1.5 font-mono">
-              <span title="Tokens in this slide" className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--color-accent-400)]/10 text-[var(--color-accent-400)] text-[10px] font-bold">
+              <span title="Токенов на этом слайде" className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--color-accent-400)]/10 text-[var(--color-accent-400)] text-[10px] font-bold">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                 </svg>
-                {slideTokens[currentSlide]?.toLocaleString()}
+                {slideTokens[currentSlide] !== undefined ? formatNumber(slideTokens[currentSlide]) : ''}
               </span>
               <span className="text-[var(--color-text-tertiary)] text-[9px]">/</span>
-              <span title="Total tokens" className="text-[10px] text-[var(--color-text-tertiary)] font-medium">{totalTokens.toLocaleString()}</span>
+              <span title="Всего токенов" className="text-[10px] text-[var(--color-text-tertiary)] font-medium">{formatNumber(totalTokens)}</span>
             </div>
           </div>
 
@@ -274,7 +275,8 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
                       ? 'w-6 h-1.5 bg-[var(--color-accent-400)]'
                       : 'w-1.5 h-1.5 bg-[var(--color-text-tertiary)]/40 hover:bg-[var(--color-text-tertiary)]'
                   }`}
-                  title={`Slide ${i + 1}: ${slides[i].title}`}
+                  title={`Слайд ${i + 1}: ${slides[i].title}`}
+                  aria-label={`Слайд ${i + 1}: ${slides[i].title}`}
                 />
               ))}
             </div>
@@ -290,7 +292,7 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
               disabled={currentSlide === totalSlides - 1}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06]"
             >
-              Next
+              Далее
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -298,7 +300,7 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
             <button
               onClick={toggleFullscreen}
               className="p-1.5 rounded-lg text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06] transition-colors"
-              title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen'}
+              title={isFullscreen ? 'Выйти из полноэкранного режима (Esc)' : 'Во весь экран'}
             >
               {isFullscreen ? (
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -319,12 +321,12 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
         <span className="flex items-center gap-1">
           <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">&larr;</kbd>
           <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">&rarr;</kbd>
-          Navigate
+          Листать
         </span>
         <span className="flex items-center gap-1">
           <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">Home</kbd>
           <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-3)] font-mono text-[9px]">End</kbd>
-          First / Last
+          Первый / последний
         </span>
       </div>
     </div>
@@ -334,7 +336,7 @@ export default function SkillSlideView({ content, skillName }: SkillSlideViewPro
 // ─── Title Slide ──────────────────────────────────────────────────
 function TitleSlide({ slide, isFullscreen, totalTokens }: { slide: Slide; isFullscreen: boolean; totalTokens: number }) {
   const metaEntries = Object.entries(slide.metadata || {});
-  const allBadges = [...metaEntries, ['Tokens', totalTokens.toLocaleString()]];
+  const allBadges = [...metaEntries, ['Токены', formatNumber(totalTokens)]];
 
   return (
     <div className={`flex flex-col items-center justify-center text-center h-full min-h-[20rem] ${isFullscreen ? 'min-h-[60vh]' : ''}`}>
@@ -361,7 +363,7 @@ function TitleSlide({ slide, isFullscreen, totalTokens }: { slide: Slide; isFull
       {allBadges.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2.5 mt-8">
           {allBadges.map(([key, value]) => {
-            const isTokens = key === 'Tokens';
+            const isTokens = key === 'Токены';
             return (
               <div
                 key={key}

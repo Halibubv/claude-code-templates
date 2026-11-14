@@ -2,6 +2,7 @@
 // Pure functions over the `meta` block written by scripts/generate_components_json.py.
 
 import type { PluginContents } from './types';
+import { formatNumber, plural } from './ru.ts';
 
 export interface MetaFile {
   path: string;
@@ -19,19 +20,19 @@ export interface FileEntry {
   firstFile: string;
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 
 export function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  if (bytes < 1024) return `${bytes} Б`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1).replace('.', ',')} КБ`;
+  return `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} МБ`;
 }
 
-/** "Oct 30, 2026", read from the date the commit carries (the author's day, not the server's). */
+/** "30 октября 2026", read from the date the commit carries (the author's day, not the server's). */
 export function formatDate(iso: string | undefined): string {
   const m = iso?.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!m) return '';
-  return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
+  return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
 export function initials(name: string): string {
@@ -44,31 +45,32 @@ export function commitTitle(subject: string): string {
   return subject.replace(/\s*\(#\d+\)\s*$/, '');
 }
 
-export function formatCount(n: number, one: string, many: string): string {
-  return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
+/** "5 файлов": the number and the noun in the right Russian form (one, few, many). */
+export function formatCount(n: number, forms: [string, string, string]): string {
+  return `${formatNumber(n)} ${plural(n, forms)}`;
 }
 
 // What a catalog plugin ships (Component.contains), in display order. The keys
 // are the ones scripts/external_skills.py plugin_inventory() writes; the summary
 // below and the component page both read this one list.
-export const PLUGIN_KINDS: { key: keyof PluginContents; label: string; one: string; many: string }[] = [
-  { key: 'skills', label: 'Skills', one: 'skill', many: 'skills' },
-  { key: 'commands', label: 'Commands', one: 'command', many: 'commands' },
-  { key: 'agents', label: 'Agents', one: 'agent', many: 'agents' },
-  { key: 'hooks', label: 'Hooks', one: 'hook event', many: 'hook events' },
-  { key: 'mcpServers', label: 'MCP servers', one: 'MCP server', many: 'MCP servers' },
-  { key: 'lspServers', label: 'LSP servers', one: 'LSP server', many: 'LSP servers' },
-  { key: 'outputStyles', label: 'Output styles', one: 'output style', many: 'output styles' },
-  { key: 'themes', label: 'Themes', one: 'theme', many: 'themes' },
-  { key: 'monitors', label: 'Monitors', one: 'monitor', many: 'monitors' },
-  { key: 'bin', label: 'Executables', one: 'executable', many: 'executables' },
+export const PLUGIN_KINDS: { key: keyof PluginContents; label: string; forms: [string, string, string] }[] = [
+  { key: 'skills', label: 'Скиллы', forms: ['скилл', 'скилла', 'скиллов'] },
+  { key: 'commands', label: 'Команды', forms: ['команда', 'команды', 'команд'] },
+  { key: 'agents', label: 'Агенты', forms: ['агент', 'агента', 'агентов'] },
+  { key: 'hooks', label: 'Хуки', forms: ['событие хуков', 'события хуков', 'событий хуков'] },
+  { key: 'mcpServers', label: 'MCP-серверы', forms: ['MCP-сервер', 'MCP-сервера', 'MCP-серверов'] },
+  { key: 'lspServers', label: 'LSP-серверы', forms: ['LSP-сервер', 'LSP-сервера', 'LSP-серверов'] },
+  { key: 'outputStyles', label: 'Стили вывода', forms: ['стиль вывода', 'стиля вывода', 'стилей вывода'] },
+  { key: 'themes', label: 'Темы', forms: ['тема', 'темы', 'тем'] },
+  { key: 'monitors', label: 'Мониторы', forms: ['монитор', 'монитора', 'мониторов'] },
+  { key: 'bin', label: 'Исполняемые файлы', forms: ['исполняемый файл', 'исполняемых файла', 'исполняемых файлов'] },
 ];
 
-/** "7 skills, 1 agent" from a plugin's contains map; kinds with nothing are left out. */
+/** "7 скиллов, 1 агент" from a plugin's contains map; kinds with nothing are left out. */
 export function pluginContentsSummary(contains: PluginContents | undefined): string {
   return PLUGIN_KINDS
     .filter(({ key }) => (contains?.[key]?.length ?? 0) > 0)
-    .map(({ key, one, many }) => formatCount(contains![key]!.length, one, many))
+    .map(({ key, forms }) => formatCount(contains![key]!.length, forms))
     .join(', ');
 }
 

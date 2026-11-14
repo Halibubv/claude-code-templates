@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
 import { sanitizeHtml, codeLang, demoteH1 } from '../lib/sanitize-html';
 import SkillSlideView from './SkillSlideView';
+import { pluralize } from '../lib/ru';
 
 interface Heading {
   level: number;
@@ -189,7 +190,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
     fetch(`${GITHUB_RAW_ROOT}/${componentType}/${skillPath}/${selectedFile}`)
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); })
       .then((text) => setFileContent(text))
-      .catch((e) => { setError(`Failed to load file: ${e.message}`); setFileContent(''); })
+      .catch((e) => { setError(`Не удалось загрузить файл: ${e.message}`); setFileContent(''); })
       .finally(() => setLoading(false));
   }, [selectedFile, skillPath, skillContent, componentType, mainFile, files]);
 
@@ -324,7 +325,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
         <button 
           onClick={() => setTreeOpen(false)} 
           className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] p-1 rounded-md shrink-0 transition-all duration-150 active:scale-95" 
-          title="Close file tree"
+          title="Скрыть дерево файлов"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -339,7 +340,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
           <input type="text" value={treeFilter} onChange={(e) => setTreeFilter(e.target.value)}
-            placeholder="Filter files..." className="w-full bg-[var(--color-surface-3)] border border-[var(--color-border)] rounded-lg pl-8 pr-2.5 py-1.5 text-[11px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-primary-500)]/40 focus:ring-1 focus:ring-[var(--color-primary-500)]/20 transition-all" />
+            placeholder="Фильтр файлов..." className="w-full bg-[var(--color-surface-3)] border border-[var(--color-border)] rounded-lg pl-8 pr-2.5 py-1.5 text-[11px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-primary-500)]/40 focus:ring-1 focus:ring-[var(--color-primary-500)]/20 transition-all" />
         </div>
       </div>
       <div className="flex-1 overflow-y-auto py-1" style={{ scrollbarWidth: 'thin' }}>
@@ -350,12 +351,12 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
     <button
       onClick={() => setTreeOpen(true)}
       className="shrink-0 w-10 bg-[var(--color-surface-2)] border border-r-0 border-[var(--color-border)] rounded-l-lg flex flex-col items-center justify-start pt-4 gap-2.5 hover:bg-[var(--color-surface-3)] hover:w-11 hover:shadow-sm transition-all duration-200 group active:scale-95"
-      title={`Browse files (${references.length + 1})`}
+      title={`Открыть файлы (${references.length + 1})`}
     >
       <svg className="w-5 h-5 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
       </svg>
-      <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] transition-colors" style={{ writingMode: 'vertical-lr' }}>Files</span>
+      <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] transition-colors" style={{ writingMode: 'vertical-lr' }}>Файлы</span>
     </button>
   );
 
@@ -368,7 +369,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
             <span className="font-mono">{selectedFile}</span>
-            <button onClick={() => handleFileClick(mainFile)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] ml-1">
+            <button onClick={() => handleFileClick(mainFile)} aria-label={`Вернуться к ${mainFile}`} title={`Вернуться к ${mainFile}`} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] ml-1">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -386,7 +387,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                   </svg>
-                  Code
+                  Код
                 </button>
                 <button onClick={() => setMode('preview')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'preview' ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'}`}>
@@ -394,7 +395,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  Preview
+                  Предпросмотр
                 </button>
                 {selectedFile === mainFile && (
                   <button onClick={() => setMode('slides')}
@@ -402,7 +403,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
                     </svg>
-                    Slides
+                    Слайды
                   </button>
                 )}
               </div>
@@ -410,11 +411,11 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
             {isMarkdown && (
               <button onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50); }}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors ${searchOpen ? 'bg-accent-500/15 text-accent-400' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-white/[0.04]'}`}
-                title="Search in document (Cmd+F)">
+                title="Поиск по документу (Cmd+F)">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
-                <span className="hidden sm:inline">Search</span>
+                <span className="hidden sm:inline">Поиск</span>
                 <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono ml-1">
                   {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}F
                 </kbd>
@@ -423,7 +424,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
           </div>
           <button onClick={handleCopy}
             className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
-            Copy
+            Копировать
           </button>
         </div>
 
@@ -436,15 +437,15 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
               </svg>
               <input ref={searchInputRef} type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search sections and content..."
+                placeholder="Поиск по разделам и тексту..."
                 className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg pl-9 pr-20 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans" autoFocus />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 {searchQuery.length >= 2 && (
                   <span className="text-[10px] text-[var(--color-text-tertiary)]">
-                    {highlightCount > 0 ? `${highlightCount} match${highlightCount !== 1 ? 'es' : ''}` : 'No matches'}
+                    {highlightCount > 0 ? pluralize(highlightCount, ['совпадение', 'совпадения', 'совпадений']) : 'Нет совпадений'}
                   </span>
                 )}
-                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
+                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }} aria-label="Закрыть поиск" className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -499,7 +500,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                 <div className="absolute inset-0 bg-[var(--color-surface-2)]/80 z-10 flex items-center justify-center rounded-r-lg">
                   <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                    Loading...
+                    Загрузка...
                   </div>
                 </div>
               )}
@@ -512,7 +513,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
               ) : (
                 <div ref={codeRef}
                   className={`bg-[var(--color-surface-2)] border border-l-0 border-[var(--color-border)] rounded-lg rounded-l-none p-6 text-sm text-[var(--color-text-primary)] leading-relaxed whitespace-pre-wrap font-mono overflow-hidden transition-[max-height] duration-300 ${expanded ? '' : 'max-h-[32rem]'}`}>
-                  {fileContent || 'No content available'}
+                  {fileContent || 'Содержимое недоступно'}
                 </div>
               )}
 
@@ -526,7 +527,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
-                      Show full {mode === 'preview' ? 'document' : 'source'}
+                      {mode === 'preview' ? 'Показать документ целиком' : 'Показать исходник целиком'}
                     </button>
                   </div>
                 </div>
@@ -539,7 +540,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                     <svg className="w-3.5 h-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
-                    Collapse
+                    Свернуть
                   </button>
                 </div>
               )}
@@ -549,7 +550,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
           {isMarkdown && currentHeadings.length >= 1 && mode === 'preview' && (
             <nav className="hidden lg:block w-52 shrink-0">
               <div className="sticky top-24">
-                <h4 className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">On this page</h4>
+                <h4 className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">На этой странице</h4>
                 <ul className="space-y-0.5 text-[12px] border-l border-[var(--color-border)] max-h-[calc(100vh-10rem)] overflow-y-auto">
                   {currentHeadings.map((h) => (
                     <li key={h.id}>

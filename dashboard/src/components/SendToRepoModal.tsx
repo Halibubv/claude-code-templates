@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { listRepos, createPR, type GitHubRepo, type PRResult } from '../lib/github-api';
 import type { CollectionItem } from '../lib/types';
 import { fetchComponentContentData } from '../lib/data';
+import { pluralize } from '../lib/ru';
 
 type Step = 'connect' | 'select-repo' | 'creating' | 'done' | 'error';
 
@@ -58,7 +59,7 @@ async function buildFileMap(
           // .claude/skills/<name>/ — the same place the CLI installs it.
           for (const [rel, text] of Object.entries(contentData.files ?? {})) {
             // only a plain relative path may land in the plugin directory: no traversal, no absolute paths
-            if (!isSafeRelativePath(rel)) throw new Error(`mod ${name}: refusing file path "${rel}"`);
+            if (!isSafeRelativePath(rel)) throw new Error(`Мод ${name}: недопустимый путь к файлу «${rel}»`);
             files[`.claude/skills/${name}/${rel}`] = text;
           }
           files[`.claude/skills/${name}/README.md`] = content;
@@ -161,7 +162,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
 
   function startOAuth() {
     if (!GITHUB_CLIENT_ID) {
-      setError('GitHub OAuth is not configured (missing PUBLIC_GITHUB_CLIENT_ID)');
+      setError('GitHub OAuth не настроен (нет PUBLIC_GITHUB_CLIENT_ID)');
       setStep('error');
       return;
     }
@@ -182,7 +183,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
       const files = await buildFileMap(items);
 
       if (Object.keys(files).length === 0) {
-        throw new Error('No component content found to include in PR');
+        throw new Error('Не нашлось содержимого компонентов для PR');
       }
 
       const branchName = `claude-components/${collectionName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
@@ -234,10 +235,11 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
             <svg className="w-5 h-5 text-[var(--color-text-primary)]" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
             </svg>
-            <h3 className="text-sm font-semibold text-white">Send to GitHub</h3>
+            <h3 className="text-sm font-semibold text-white">Отправить в GitHub</h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Закрыть"
             className="p-1 rounded hover:bg-white/10 text-[var(--color-text-tertiary)] hover:text-white transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -252,7 +254,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
           {step === 'connect' && (
             <div className="text-center py-6">
               <p className="text-sm text-[var(--color-text-secondary)] mb-4">
-                Connect your GitHub account to create a PR with your components.
+                Подключите аккаунт GitHub, чтобы создать PR с вашими компонентами.
               </p>
               <button
                 onClick={startOAuth}
@@ -261,7 +263,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                 </svg>
-                Connect GitHub
+                Подключить GitHub
               </button>
             </div>
           )}
@@ -273,7 +275,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search repositories..."
+                  placeholder="Поиск репозиториев..."
                   className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none focus:border-[var(--color-border-hover)] transition-colors"
                   autoFocus
                 />
@@ -322,10 +324,10 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                         </svg>
                       </div>
                       <p className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">
-                        {search ? 'No repositories found' : 'No repositories available'}
+                        {search ? 'Репозитории не найдены' : 'Нет доступных репозиториев'}
                       </p>
                       <p className="text-[13px] text-[var(--color-text-secondary)] text-center max-w-xs">
-                        {search ? 'Try a different search term' : 'Connect your GitHub account to see your repositories'}
+                        {search ? 'Попробуйте другой запрос' : 'Подключите аккаунт GitHub, чтобы увидеть свои репозитории'}
                       </p>
                     </div>
                   )}
@@ -336,7 +338,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
               {selectedRepo && (
                 <div className="mt-4 pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
                   <div className="text-[12px] text-[var(--color-text-tertiary)]">
-                    {items.length} component{items.length !== 1 ? 's' : ''} → <span className="text-[var(--color-text-primary)]">{selectedRepo.full_name}</span>
+                    {pluralize(items.length, ['компонент', 'компонента', 'компонентов'])} → <span className="text-[var(--color-text-primary)]">{selectedRepo.full_name}</span>
                   </div>
                   <button
                     onClick={handleCreatePR}
@@ -348,7 +350,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                       <path d="M13 6h3a2 2 0 012 2v7" />
                       <line x1="6" y1="9" x2="6" y2="21" />
                     </svg>
-                    Create PR
+                    Создать PR
                   </button>
                 </div>
               )}
@@ -359,9 +361,9 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
           {step === 'creating' && (
             <div className="text-center py-8">
               <div className="w-6 h-6 border-2 border-[var(--color-text-tertiary)] border-t-[var(--color-text-primary)] rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm text-[var(--color-text-secondary)]">Creating pull request...</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Создаём pull request...</p>
               <p className="text-[11px] text-[var(--color-text-tertiary)] mt-1">
-                Adding {items.length} component{items.length !== 1 ? 's' : ''} to {selectedRepo?.full_name}
+                Добавляем {pluralize(items.length, ['компонент', 'компонента', 'компонентов'])} в {selectedRepo?.full_name}
               </p>
             </div>
           )}
@@ -374,9 +376,9 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-white mb-1">Pull Request Created!</p>
+              <p className="text-sm font-medium text-white mb-1">Pull request создан!</p>
               <p className="text-[12px] text-[var(--color-text-tertiary)] mb-4">
-                PR #{prResult.number} in {selectedRepo?.full_name}
+                PR #{prResult.number} в {selectedRepo?.full_name}
               </p>
               <a
                 href={prResult.html_url}
@@ -384,7 +386,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
               >
-                View on GitHub
+                Открыть на GitHub
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
@@ -400,7 +402,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-white mb-1">Something went wrong</p>
+              <p className="text-sm font-medium text-white mb-1">Что-то пошло не так</p>
               <p className="text-[12px] text-[var(--color-text-tertiary)] mb-4 max-w-sm mx-auto">{error}</p>
               <button
                 onClick={() => {
@@ -409,7 +411,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
                 }}
                 className="px-4 py-2 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] rounded-lg text-sm text-[var(--color-text-secondary)] hover:text-white transition-colors"
               >
-                Try Again
+                Попробовать снова
               </button>
             </div>
           )}
